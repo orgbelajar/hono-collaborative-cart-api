@@ -1,7 +1,7 @@
 {
   "name": "migrate-hono-bun",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "bun run --hot src/server.ts",
     "lint": "eslint ./"
   },
   "dependencies": {

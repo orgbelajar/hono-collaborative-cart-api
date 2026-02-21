@@ -1,8 +1,10 @@
-class ClientError extends Error {
-  constructor(message: string, statusCode: number = 400) {
-    super(message);
+import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
+
+class ClientError extends HTTPException {
+  constructor(message: string, statusCode: ContentfulStatusCode = 400) {
+    super(statusCode, { message });
     this.name = "ClientError";
-    this.statusCode = statusCode;
   }
 }
 
