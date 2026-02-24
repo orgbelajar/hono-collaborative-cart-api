@@ -1,14 +1,11 @@
 import { Hono } from "hono";
-import { RegisterUserRequest } from "../../../model/user-model";
 import { UserRepository } from "../repositories/index";
 import { userPayloadSchema } from "../validator/index";
 
 export const userController = new Hono();
 
 userController.post("/api/users", async (c) => {
-  const request = userPayloadSchema.parse(
-    await c.req.json(),
-  ) as RegisterUserRequest;
+  const request = userPayloadSchema.parse(await c.req.json());
 
   const response = await UserRepository.registerUser(request);
 

@@ -2,17 +2,13 @@ import { Hono } from "hono";
 import { AuthenticationRepository } from "../repositories/index";
 import { verifyUserCredentialPayloadSchema } from "../validator/index";
 import { UserRepository } from "../../users/repositories";
-import { VerifyUserCredentialRequest } from "../../../model/auth-model";
 import TokenManager from "../../../security/token-manager";
 import { refreshTokenPayloadSchema } from "../validator/index";
-import { RefreshTokenRequest } from "../../../model/auth-model";
 
 export const authenticationController = new Hono();
 
 authenticationController.post("/api/authentications", async (c) => {
-  const request = verifyUserCredentialPayloadSchema.parse(
-    (await c.req.json()) as VerifyUserCredentialRequest,
-  );
+  const request = verifyUserCredentialPayloadSchema.parse(await c.req.json());
 
   const userId = await UserRepository.verifyUserCredential(request);
 
@@ -34,9 +30,7 @@ authenticationController.post("/api/authentications", async (c) => {
 });
 
 authenticationController.put("/api/authentications", async (c) => {
-  const request = refreshTokenPayloadSchema.parse(
-    (await c.req.json()) as RefreshTokenRequest,
-  );
+  const request = refreshTokenPayloadSchema.parse(await c.req.json());
 
   await AuthenticationRepository.verifyRefreshToken(request.token);
 
@@ -56,9 +50,7 @@ authenticationController.put("/api/authentications", async (c) => {
 });
 
 authenticationController.delete("/api/authentications", async (c) => {
-  const request = refreshTokenPayloadSchema.parse(
-    (await c.req.json()) as RefreshTokenRequest,
-  );
+  const request = refreshTokenPayloadSchema.parse(await c.req.json());
 
   await AuthenticationRepository.verifyRefreshToken(request.token);
 
