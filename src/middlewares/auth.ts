@@ -10,7 +10,7 @@ export const authMiddleware: MiddlewareHandler = async (c, next) => {
       const user = await TokenManager.verifyAccessToken(
         token.split("Bearer ")[1],
       );
-      c.set("user", user);
+      c.set("user", user); // contain user id example "user-9pW6MNVi_7wgGI2js"
       await next();
       return;
     } catch (error) {

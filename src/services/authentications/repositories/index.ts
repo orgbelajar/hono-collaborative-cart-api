@@ -3,6 +3,16 @@ import InvariantError from "../../../exceptions/invariant-error";
 
 export class AuthenticationRepository {
   static async addRefreshToken(token: string) {
+    const result = await prisma.authentication.findUnique({
+      where: {
+        token,
+      },
+    });
+
+    if (result) {
+      throw new InvariantError("Refresh token sudah ada");
+    }
+
     return prisma.authentication.create({
       data: {
         token,

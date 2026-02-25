@@ -13,7 +13,7 @@ const TokenManager = {
         process.env.ACCESS_TOKEN_KEY!,
         "HS256",
       );
-      return payload;
+      return payload; 
     } catch (error) {
       console.log(error);
       throw new InvariantError("Access token tidak valid");
@@ -26,7 +26,7 @@ const TokenManager = {
         process.env.REFRESH_TOKEN_KEY!,
         "HS256",
       );
-      return payload;
+      return payload; //
     } catch (error) {
       console.log(error);
       throw new InvariantError("Refresh token tidak valid");

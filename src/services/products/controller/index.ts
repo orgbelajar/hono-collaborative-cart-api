@@ -4,11 +4,8 @@ import {
   addProductPayloadSchema,
   editProductPayloadSchema,
 } from "../validator/index";
-import { authMiddleware } from "../../../middlewares/auth";
 
 export const productController = new Hono();
-
-productController.use(authMiddleware);
 
 productController.post("/api/products", async (c) => {
   const request = addProductPayloadSchema.parse(await c.req.json());
