@@ -13,10 +13,3 @@ export type VerifyUserCredentialRequest = {
   username: string;
   password: string;
 };
-
-// export function toAuthenticationResponse(authentication: Authentication): AuthenticationResponse {
-//   return {
-//     accessToken: authentication.accessToken,
-//     refreshToken: authentication.refreshToken,
-//   };
-// }

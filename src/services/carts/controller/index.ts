@@ -13,7 +13,7 @@ export const cartController = new Hono<{ Variables: ApplicationVariables }>();
 
 cartController.use(authMiddleware);
 
-cartController.post("/api/carts", async (c) => {
+cartController.post("/api/cart", async (c) => {
   const user = c.get("user") as User; // from authMiddleware c.set("user", { id: user.id });, example: "user-9pW6MNVi_7wgGI2js"
   const request = addCartPayloadSchema.parse(await c.req.json());
 
@@ -42,7 +42,7 @@ cartController.get("/api/carts", async (c) => {
   );
 });
 
-cartController.delete("/api/carts/:id", async (c) => {
+cartController.delete("/api/cart/:id", async (c) => {
   const cartId = c.req.param("id");
   const user = c.get("user") as User;
 
@@ -62,7 +62,7 @@ cartController.delete("/api/carts/:id", async (c) => {
 });
 
 // Done
-cartController.post("/api/carts/:id/products", async (c) => {
+cartController.post("/api/cart/:id/product", async (c) => {
   const request = addProductToCartPayloadSchema.parse(await c.req.json());
   const cartId = c.req.param("id");
   const user = c.get("user") as User;
@@ -72,20 +72,24 @@ cartController.post("/api/carts/:id/products", async (c) => {
     userId: user.id,
   });
 
-  const response = await CartRepositories.addProductToCart(request);
+  await CartRepositories.addProductToCart(
+    cartId,
+    user.id,
+    user.username,
+    request,
+  );
 
   return c.json(
     {
       status: "success",
       message: "Produk berhasil ditambahkan ke cart",
-      data: response,
     },
     201,
   );
 });
 
 // Done
-cartController.get("/api/carts/:id/products", async (c) => {
+cartController.get("/api/cart/:id/products", async (c) => {
   const cartId = c.req.param("id");
   const user = c.get("user") as User;
 
@@ -116,16 +120,9 @@ cartController.delete("/api/carts/:id/products", async (c) => {
     userId: user.id,
   });
 
-  await CartRepositories.deleteProductFromCart({
+  await CartRepositories.deleteProductFromCart(user.id, user.username, {
     cartId,
     productId: request.productId,
-  });
-
-  await CartRepositories.addCartActivities({
-    cartId,
-    productId: request.productId,
-    userId: user.id,
-    action: "delete",
   });
 
   return c.json(

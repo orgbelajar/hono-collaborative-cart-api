@@ -23,6 +23,8 @@ export type ProductResponse = {
   price: number;
   stock: number;
   categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export function toProductResponse(product: Product): ProductResponse {
@@ -33,5 +35,7 @@ export function toProductResponse(product: Product): ProductResponse {
     price: product.price,
     stock: product.stock,
     categoryId: product.categoryId,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
   };
 }

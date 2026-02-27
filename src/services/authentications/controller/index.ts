@@ -10,10 +10,13 @@ export const authenticationController = new Hono();
 authenticationController.post("/api/authentications", async (c) => {
   const request = verifyUserCredentialPayloadSchema.parse(await c.req.json());
 
-  const userId = await UserRepository.verifyUserCredential(request);
+  const { id, username } = await UserRepository.verifyUserCredential(request);
 
-  const accessToken = await TokenManager.generateAccessToken({ id: userId });
-  const refreshToken = await TokenManager.generateRefreshToken({ id: userId });
+  const accessToken = await TokenManager.generateAccessToken({ id, username });
+  const refreshToken = await TokenManager.generateRefreshToken({
+    id,
+    username,
+  });
 
   await AuthenticationRepository.addRefreshToken(refreshToken);
   return c.json(
@@ -34,8 +37,8 @@ authenticationController.put("/api/authentications", async (c) => {
 
   await AuthenticationRepository.verifyRefreshToken(request.token);
 
-  const { id } = await TokenManager.verifyRefreshToken(request.token);
-  const accessToken = await TokenManager.generateAccessToken({ id });
+  const { id, username } = await TokenManager.verifyRefreshToken(request.token);
+  const accessToken = await TokenManager.generateAccessToken({ id, username });
 
   return c.json(
     {

@@ -13,7 +13,7 @@ const TokenManager = {
         process.env.ACCESS_TOKEN_KEY!,
         "HS256",
       );
-      return payload; 
+      return payload; // mengembalikan payload yang berisi user id dan username
     } catch (error) {
       console.log(error);
       throw new InvariantError("Access token tidak valid");

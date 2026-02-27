@@ -7,7 +7,11 @@ import {
 } from "../../../model/user-model";
 import { VerifyUserCredentialRequest } from "../../../model/auth-model";
 import { nanoid } from "nanoid";
-import { InvariantError, NotFoundError, AuthenticationError } from "../../../exceptions/index";
+import {
+  InvariantError,
+  NotFoundError,
+  AuthenticationError,
+} from "../../../exceptions/index";
 
 export class UserRepository {
   static async registerUser(
@@ -33,7 +37,9 @@ export class UserRepository {
     return toUserResponse(user);
   }
 
-  static async verifyNewUsername(request: VerifyUsernameRequest): Promise<void> {
+  static async verifyNewUsername(
+    request: VerifyUsernameRequest,
+  ): Promise<void> {
     const totalUserWithSameUsername = await prisma.user.count({
       where: {
         username: request.username,
@@ -61,22 +67,25 @@ export class UserRepository {
     return toUserResponse(user);
   }
 
-  static async verifyUserCredential(request: VerifyUserCredentialRequest): Promise<string> {
-    const userId = await prisma.user.findUnique({
+  static async verifyUserCredential(
+    request: VerifyUserCredentialRequest,
+  ): Promise<{ id: string; username: string }> {
+    const user = await prisma.user.findUnique({
       where: {
         username: request.username,
       },
       select: {
         id: true,
+        username: true,
         password: true,
       },
     });
 
-    if (!userId) {
-      throw new AuthenticationError("Kredensial anda yang diberikan salah");
+    if (!user) {
+      throw new AuthenticationError("Kredensial yang anda diberikan salah");
     }
 
-    const { id, password: hashedPassword } = userId;
+    const { id, username, password: hashedPassword } = user;
 
     const isPasswordValid = await Bun.password.verify(
       request.password,
@@ -87,7 +96,7 @@ export class UserRepository {
       throw new InvariantError("Password yang anda berikan salah");
     }
 
-    return id;
+    return { id, username };
   }
 
   static async getUsersByUsername(username: string): Promise<UserResponse[]> {

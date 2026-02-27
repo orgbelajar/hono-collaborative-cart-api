@@ -11,7 +11,9 @@ export type DeleteProductFromCartPayload = {
 export type AddCartActivityRequest = {
   cartId: string;
   productId: string;
+  productName: string;
   userId: string;
+  username: string;
   action: string;
 };
 
@@ -20,7 +22,6 @@ export type GetCartActivitiesRequest = {
 };
 
 export type AddProductToCartRequest = {
-  cartId: string;
   productId: string;
   qty: number;
 };
@@ -103,14 +104,11 @@ export function toCartWithProductsResponse(
 }
 
 export function toCartActivityResponse(
-  activity: CartActivity & {
-    user: { username: string };
-    product: { name: string };
-  },
+  activity: CartActivity,
 ): CartActivityResponse {
   return {
-    username: activity.user.username,
-    productName: activity.product.name,
+    username: activity.username,
+    productName: activity.productName,
     action: activity.action,
     time: activity.time,
   };

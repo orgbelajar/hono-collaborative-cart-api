@@ -12,7 +12,6 @@ export const addCartPayloadSchema: ZodType<AddCartPayload> = z.object({
 
 export const addProductToCartPayloadSchema: ZodType<AddProductToCartRequest> =
   z.object({
-    cartId: z.string().min(1).max(50),
     productId: z.string().min(1).max(50),
     qty: z.number().int().min(1),
   });

@@ -148,6 +148,9 @@ export class CartRepositories {
 
   // Done
   static async addProductToCart(
+    cartId: string,
+    userId: string,
+    username: string,
     request: AddProductToCartRequest,
   ): Promise<void> {
     const product = await prisma.product.findUnique({
@@ -163,11 +166,10 @@ export class CartRepositories {
     }
 
     const existingItem = await prisma.cartItem.findFirst({
-      where: { cartId: request.cartId, productId: request.productId },
+      where: { cartId, productId: request.productId },
     });
 
     if (existingItem) {
-      // 3a. Jika sudah ada → update qty (tambahkan)
       await prisma.cartItem.update({
         where: { id: existingItem.id },
         data: { qty: existingItem.qty + request.qty },
@@ -178,6 +180,7 @@ export class CartRepositories {
       await prisma.cartItem.create({
         data: {
           id,
+          cartId,
           ...request,
         },
       });
@@ -186,6 +189,15 @@ export class CartRepositories {
     await prisma.product.update({
       where: { id: request.productId },
       data: { stock: product.stock - request.qty },
+    });
+
+    await this.addCartActivities({
+      cartId,
+      productId: product.id,
+      productName: product.name,
+      userId,
+      username,
+      action: "add",
     });
   }
 
@@ -221,14 +233,16 @@ export class CartRepositories {
 
   // Done
   static async deleteProductFromCart(
+    userId: string,
+    username: string,
     request: DeleteProductFromCartRequest,
   ): Promise<void> {
-    // Cari item berdasarkan cartId + productId
     const cartItem = await prisma.cartItem.findFirst({
       where: {
         cartId: request.cartId,
         productId: request.productId,
       },
+      include: { product: { select: { name: true } } },
     });
 
     if (!cartItem) {
@@ -236,21 +250,28 @@ export class CartRepositories {
     }
 
     if (cartItem.qty > 1) {
-      // Jika qty lebih dari 1 → kurangi 1
       await prisma.cartItem.update({
         where: { id: cartItem.id },
         data: { qty: cartItem.qty - 1 },
       });
     } else {
-      // Jika qty = 1 → hapus item dari keranjang
       await prisma.cartItem.delete({
         where: { id: cartItem.id },
       });
     }
-    // Kembalikan stok produk (+1)
+
     await prisma.product.update({
       where: { id: request.productId },
       data: { stock: { increment: 1 } },
+    });
+
+    await this.addCartActivities({
+      cartId: request.cartId,
+      productId: request.productId,
+      productName: cartItem.product.name,
+      userId,
+      username,
+      action: "delete",
     });
   }
 
@@ -260,14 +281,6 @@ export class CartRepositories {
   ): Promise<CartActivityResponse[]> {
     const activities = await prisma.cartActivity.findMany({
       where: { cartId: request.cartId },
-      include: {
-        user: {
-          select: { username: true },
-        },
-        product: {
-          select: { name: true },
-        },
-      },
       orderBy: { time: "asc" },
     });
 
