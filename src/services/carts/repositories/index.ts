@@ -4,15 +4,11 @@ import {
   CartResponse,
   CartWithProductsResponse,
   CartActivityResponse,
-  CartIdRequest,
   toCartResponse,
   toCartWithProductsResponse,
   toCartActivityResponse,
   DeleteProductFromCartRequest,
-  GetCartActivitiesRequest,
   AddCartActivityRequest,
-  VerifyCartOwnerRequest,
-  VerifyCartAccessRequest,
   AddCartPayload,
 } from "../../../model/cart-model";
 import { nanoid } from "nanoid";
@@ -24,16 +20,19 @@ import { User } from "../../../../generated/prisma/client";
 
 export class CartRepositories {
   // Done
-  static async verifyCartOwner(request: VerifyCartOwnerRequest, ownerId: User): Promise<void> {
+  static async verifyCartOwner(
+    cartId: string,
+    credential: User,
+  ): Promise<void> {
     const cart = await prisma.cart.findUnique({
-      where: { id: request.cartId},
+      where: { id: cartId },
     });
 
     if (!cart) {
       throw new NotFoundError("Cart tidak ditemukan");
     }
 
-    if (cart.ownerId !== ownerId.id) {
+    if (cart.ownerId !== credential.id) {
       throw new AuthorizationError("Anda tidak berhak mengakses cart ini");
     }
 
@@ -42,11 +41,12 @@ export class CartRepositories {
 
   // Done
   static async verifyCartAccess(
-    request: VerifyCartAccessRequest, userId: User
+    cartId: string,
+    credential: User,
   ): Promise<void> {
     try {
       // Cek apakah dia owner
-      await this.verifyCartOwner(request, userId);
+      await this.verifyCartOwner(cartId, credential);
       // error berisi AuthorizationError dari pengecekan owner
     } catch (error) {
       // Jika bukan owner (AuthorizationError) dan cart tidak ditemukan akan throw NotFoundError
@@ -56,7 +56,7 @@ export class CartRepositories {
 
       try {
         // Jika bukan owner dan cart ditemukan, cek apakah dia collaborator
-        await CollaborationRepositories.verifyCollaborator(request, userId);
+        await CollaborationRepositories.verifyCollaborator(cartId, credential);
       } catch {
         // Jika bukan collaborator, lempar error asli dari pengecekan owner (AuthorizationError)
         throw error;
@@ -66,6 +66,8 @@ export class CartRepositories {
 
   // Done
   static async addCartActivities(
+    cartId: string,
+    credential: User,
     request: AddCartActivityRequest,
   ): Promise<void> {
     const id = `activity-${nanoid(17)}`;
@@ -73,6 +75,9 @@ export class CartRepositories {
     await prisma.cartActivity.create({
       data: {
         id,
+        cartId,
+        userId: credential.id,
+        username: credential.username,
         ...request,
       },
     });
@@ -80,14 +85,14 @@ export class CartRepositories {
 
   // Done
   static async addCart(
-    ownerId: User,
+    credential: User,
     request: AddCartPayload,
   ): Promise<{ cartId: string }> {
     const id = `cart-${nanoid(16)}`;
 
     const data = {
       id,
-      ownerId: ownerId.id,
+      ownerId: credential.id,
       ...request,
     };
 
@@ -99,17 +104,17 @@ export class CartRepositories {
   }
 
   // Done
-  static async getCarts(ownerId: User): Promise<CartResponse[]> {
+  static async getCarts(credential: User): Promise<CartResponse[]> {
     const carts = await prisma.cart.findMany({
       where: {
         OR: [
           // Kondisi 1: user adalah owner
-          { ownerId: ownerId.id },
+          { ownerId: credential.id },
           // Kondisi 2: user adalah kolaborator
           {
             collaborators: {
               some: {
-                userId: ownerId.id,
+                userId: credential.id,
               },
             },
           },
@@ -133,21 +138,24 @@ export class CartRepositories {
   }
 
   // Done
-  static async deleteCartById(request: CartIdRequest): Promise<void> {
-    const cart = await prisma.cart.delete({
-      where: { id: request.cartId },
+  static async deleteCartById(cartId: string): Promise<void> {
+    const cart = await prisma.cart.findUnique({
+      where: { id: cartId },
     });
 
     if (!cart) {
       throw new NotFoundError("Cart tidak ditemukan");
     }
+
+    await prisma.cart.delete({
+      where: { id: cartId },
+    });
   }
 
   // Done
   static async addProductToCart(
     cartId: string,
-    userId: string,
-    username: string,
+    credential: User,
     request: AddProductToCartRequest,
   ): Promise<void> {
     const product = await prisma.product.findUnique({
@@ -188,22 +196,19 @@ export class CartRepositories {
       data: { stock: product.stock - request.qty },
     });
 
-    await this.addCartActivities({
-      cartId,
+    await this.addCartActivities(cartId, credential, {
       productId: product.id,
       productName: product.name,
-      userId,
-      username,
       action: "add",
     });
   }
 
   // Done
   static async getProductsFromCart(
-    request: CartIdRequest,
+    cartId: string,
   ): Promise<CartWithProductsResponse> {
     const cart = await prisma.cart.findUnique({
-      where: { id: request.cartId },
+      where: { id: cartId },
       include: {
         owner: {
           select: { username: true },
@@ -230,13 +235,13 @@ export class CartRepositories {
 
   // Done
   static async deleteProductFromCart(
-    userId: string,
-    username: string,
+    cartId: string,
+    credential: User,
     request: DeleteProductFromCartRequest,
   ): Promise<void> {
     const cartItem = await prisma.cartItem.findFirst({
       where: {
-        cartId: request.cartId,
+        cartId,
         productId: request.productId,
       },
       include: { product: { select: { name: true } } },
@@ -262,22 +267,19 @@ export class CartRepositories {
       data: { stock: { increment: 1 } },
     });
 
-    await this.addCartActivities({
-      cartId: request.cartId,
+    await this.addCartActivities(cartId, credential, {
       productId: request.productId,
       productName: cartItem.product.name,
-      userId,
-      username,
       action: "delete",
     });
   }
 
   // Done
   static async getCartActivities(
-    request: GetCartActivitiesRequest,
+    cartId: string,
   ): Promise<CartActivityResponse[]> {
     const activities = await prisma.cartActivity.findMany({
-      where: { cartId: request.cartId },
+      where: { cartId },
       orderBy: { time: "asc" },
     });
 

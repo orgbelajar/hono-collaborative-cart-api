@@ -9,16 +9,9 @@ export type DeleteProductFromCartPayload = {
 };
 
 export type AddCartActivityRequest = {
-  cartId: string;
   productId: string;
   productName: string;
-  userId: string;
-  username: string;
   action: string;
-};
-
-export type GetCartActivitiesRequest = {
-  cartId: string;
 };
 
 export type AddProductToCartRequest = {
@@ -27,22 +20,7 @@ export type AddProductToCartRequest = {
 };
 
 export type DeleteProductFromCartRequest = {
-  cartId: string;
   productId: string;
-};
-
-export type VerifyCartOwnerRequest = {
-  cartId: string;
-  // ownerId: string;
-};
-
-export type VerifyCartAccessRequest = {
-  cartId: string;
-  // userId: string;
-};
-
-export type CartIdRequest = {
-  cartId: string;
 };
 
 export type CartResponse = {

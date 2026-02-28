@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import { AuthenticationRepository } from "../repositories/index";
-import { verifyUserCredentialPayloadSchema } from "../validator/index";
+import {
+  verifyUserCredentialPayloadSchema,
+  refreshTokenPayloadSchema,
+} from "../validator/index";
 import { UserRepository } from "../../users/repositories";
 import TokenManager from "../../../security/token-manager";
-import { refreshTokenPayloadSchema } from "../validator/index";
 
 export const authenticationController = new Hono();
 
@@ -35,6 +37,7 @@ authenticationController.post("/api/authentications", async (c) => {
 authenticationController.put("/api/authentications", async (c) => {
   const request = refreshTokenPayloadSchema.parse(await c.req.json());
 
+  // Cek refresh token di database
   await AuthenticationRepository.verifyRefreshToken(request.token);
 
   const { id, username } = await TokenManager.verifyRefreshToken(request.token);
@@ -56,7 +59,6 @@ authenticationController.delete("/api/authentications", async (c) => {
   const request = refreshTokenPayloadSchema.parse(await c.req.json());
 
   await AuthenticationRepository.verifyRefreshToken(request.token);
-
   await AuthenticationRepository.deleteRefreshToken(request.token);
 
   return c.json(
