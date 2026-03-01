@@ -5,9 +5,12 @@ import {
   RestockProductRequest,
   ProductResponse,
   toProductResponse,
+  LikesCountResponse,
 } from "../../../model/product-model";
 import { nanoid } from "nanoid";
 import NotFoundError from "../../../exceptions/not-found-error";
+import InvariantError from "../../../exceptions/invariant-error";
+import { User } from "../../../../generated/prisma/client";
 
 export class ProductRepository {
   static async addProduct(
@@ -77,10 +80,8 @@ export class ProductRepository {
     id: string,
     fileLocation: string,
   ): Promise<void> {
-    // Cek produk ada atau tidak
     await this.getProductById(id);
 
-    // Update gambar produk jika gambar produk sebelumnya ada
     await prisma.product.update({
       where: {
         id,
@@ -99,5 +100,67 @@ export class ProductRepository {
         id,
       },
     });
+  }
+
+  static async likeProduct(productId: string, credential: User): Promise<void> {
+    // Cek produk ada
+    await this.getProductById(productId);
+
+    // Cek apakah sudah pernah like
+    const existingLike = await prisma.wishlist.findFirst({
+      where: {
+        userId: credential.id,
+        productId,
+      },
+    });
+
+    if (existingLike) {
+      throw new InvariantError("Anda sudah menyukai produk ini");
+    }
+
+    const id = `like-${nanoid(17)}`;
+
+    await prisma.wishlist.create({
+      data: {
+        id,
+        userId: credential.id,
+        productId,
+      },
+    });
+  }
+
+  static async unlikeProduct(
+    productId: string,
+    credential: User,
+  ): Promise<void> {
+    const like = await prisma.wishlist.findFirst({
+      where: {
+        userId: credential.id,
+        productId,
+      },
+    });
+
+    if (!like) {
+      throw new NotFoundError("Anda belum menyukai produk ini");
+    }
+
+    await prisma.wishlist.delete({
+      where: {
+        id: like.id,
+      },
+    });
+  }
+
+  static async getProductLikes(productId: string): Promise<LikesCountResponse> {
+    // Cek produk ada + ambil data nama
+    const product = await this.getProductById(productId);
+
+    const likes = await prisma.wishlist.count({
+      where: {
+        productId,
+      },
+    });
+
+    return { productId, productName: product.name, likes };
   }
 }

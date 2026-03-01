@@ -13,8 +13,12 @@ import {
   MIME_TO_EXT,
   UPLOAD_DIR,
 } from "../storage/storage-config";
+import { authMiddleware } from "../../../middlewares/auth";
+import { ApplicationVariables } from "../../../model/app-model";
 
-export const productController = new Hono();
+export const productController = new Hono<{
+  Variables: ApplicationVariables;
+}>();
 
 productController.post("/api/product", async (c) => {
   const request = addProductPayloadSchema.parse(await c.req.json());
@@ -143,6 +147,56 @@ productController.delete("/api/product/:id", async (c) => {
     {
       status: "success",
       message: "Produk berhasil dihapus",
+    },
+    200,
+  );
+});
+
+// Endpoint likes — memerlukan autentikasi
+productController.post("/api/product/:id/likes", authMiddleware, async (c) => {
+  const productId = c.req.param("id");
+  const credential = c.get("user");
+
+  const response = await ProductRepository.likeProduct(productId, credential);
+
+  return c.json(
+    {
+      status: "success",
+      message: "Produk berhasil disukai",
+      data: response,
+    },
+    201,
+  );
+});
+
+productController.delete(
+  "/api/product/:id/likes",
+  authMiddleware,
+  async (c) => {
+    const productId = c.req.param("id");
+    const credential = c.get("user");
+
+    await ProductRepository.unlikeProduct(productId, credential);
+
+    return c.json(
+      {
+        status: "success",
+        message: "Batal menyukai produk",
+      },
+      200,
+    );
+  },
+);
+
+productController.get("/api/product/:id/likes", authMiddleware, async (c) => {
+  const productId = c.req.param("id");
+
+  const response = await ProductRepository.getProductLikes(productId);
+
+  return c.json(
+    {
+      status: "success",
+      data: response,
     },
     200,
   );

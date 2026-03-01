@@ -1,5 +1,5 @@
 import { prisma } from "../../../applications/database";
-import { NotFoundError } from "../../../exceptions";
+import NotFoundError from "../../../exceptions/not-found-error";
 import {
   CategoryRequest,
   CategoryResponse,

@@ -9,10 +9,6 @@ export type AddProductRequest = {
   categoryId: string;
 };
 
-export type AddImageProductRequest = {
-  image: string;
-};
-
 export type EditProductRequest = {
   name?: string;
   description?: string;
@@ -35,6 +31,12 @@ export type ProductResponse = {
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type LikesCountResponse = {
+  productId: string;
+  productName: string;
+  likes: number;
 };
 
 export function toProductResponse(product: Product): ProductResponse {
