@@ -143,10 +143,23 @@ export class CartRepositories {
   static async deleteCartById(cartId: string): Promise<void> {
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
+      include: {
+        items: {
+          select: { productId: true, qty: true },
+        },
+      },
     });
 
     if (!cart) {
       throw new NotFoundError("Keranjang belanja tidak ditemukan");
+    }
+
+    // Kembalikan stok semua produk yang ada di dalam keranjang
+    for (const item of cart.items) {
+      await prisma.product.update({
+        where: { id: item.productId },
+        data: { stock: { increment: item.qty } },
+      });
     }
 
     await prisma.cart.delete({
@@ -201,6 +214,7 @@ export class CartRepositories {
     await this.addCartActivities(cartId, credential, {
       productId: product.id,
       productName: product.name,
+      qty: request.qty,
       action: "add",
     });
   }
@@ -274,6 +288,7 @@ export class CartRepositories {
     await this.addCartActivities(cartId, credential, {
       productId: request.productId,
       productName: cartItem.product.name,
+      qty: 1,
       action: "delete",
     });
   }

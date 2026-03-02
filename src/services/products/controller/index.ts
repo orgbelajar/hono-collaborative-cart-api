@@ -8,6 +8,7 @@ import {
 import InvariantError from "../../../exceptions/invariant-error";
 import {
   ALLOWED_IMAGE_TYPES,
+  deleteOldImage,
   ensureUploadDir,
   MAX_FILE_SIZE,
   MIME_TO_EXT,
@@ -35,7 +36,7 @@ productController.post("/api/product", async (c) => {
   );
 });
 
-productController.post("/api/upload/:id/image", async (c) => {
+productController.post("/api/product/:id/image", async (c) => {
   const id = c.req.param("id");
 
   const body = await c.req.parseBody();
@@ -65,6 +66,9 @@ productController.post("/api/upload/:id/image", async (c) => {
   // Pastikan direktori upload ada
   await ensureUploadDir();
 
+  // Ambil data produk untuk cek gambar lama
+  const existingProduct = await ProductRepository.getProductById(id);
+
   // Generate nama file unik
   const ext = MIME_TO_EXT[file.type];
   const originalName = file.name.replace(/\.[^/.]+$/, "");
@@ -81,6 +85,11 @@ productController.post("/api/upload/:id/image", async (c) => {
   const fileLocation = `http://${host}:${port}/images/${encodeURIComponent(filename)}`;
 
   await ProductRepository.addImageProductById(id, fileLocation);
+
+  // Hapus gambar lama dari disk jika ada
+  if (existingProduct.image) {
+    await deleteOldImage(existingProduct.image);
+  }
 
   return c.json(
     {

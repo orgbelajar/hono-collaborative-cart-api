@@ -1,4 +1,5 @@
-import { Category } from "../../generated/prisma/client";
+import { Category, Product } from "../../generated/prisma/client";
+import { toProductResponse, ProductResponse } from "./product-model";
 
 export type CategoryRequest = {
   name: string;
@@ -11,6 +12,14 @@ export type CategoryResponse = {
   updatedAt?: Date;
 };
 
+export type CategoryWithProductsResponse = {
+  categoryId: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  products: ProductResponse[];
+};
+
 export const toAddCategoryResponse = (category: Category): CategoryResponse => {
   return {
     categoryId: category.id,
@@ -19,7 +28,9 @@ export const toAddCategoryResponse = (category: Category): CategoryResponse => {
   };
 };
 
-export const toGetCategoryByIdResponse = (category: Category): CategoryResponse => {
+export const toGetCategoryByIdResponse = (
+  category: Category,
+): CategoryResponse => {
   return {
     categoryId: category.id,
     name: category.name,
@@ -28,11 +39,24 @@ export const toGetCategoryByIdResponse = (category: Category): CategoryResponse 
   };
 };
 
-export const toEditCategoryResponse = (category: Category): CategoryResponse => {
+export const toEditCategoryResponse = (
+  category: Category,
+): CategoryResponse => {
   return {
     categoryId: category.id,
     name: category.name,
     updatedAt: category.updatedAt,
   };
 };
-  
+
+export const toGetCategoryWithProductsResponse = (
+  category: Category & { products: Product[] },
+): CategoryWithProductsResponse => {
+  return {
+    categoryId: category.id,
+    name: category.name,
+    createdAt: category.createdAt,
+    updatedAt: category.updatedAt,
+    products: category.products.map(toProductResponse),
+  };
+};

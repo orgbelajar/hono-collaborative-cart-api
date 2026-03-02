@@ -30,3 +30,13 @@ export const MIME_TO_EXT: Record<string, string> = {
 export async function ensureUploadDir(): Promise<void> {
   await fs.mkdir(UPLOAD_DIR, { recursive: true });
 }
+
+// Hapus gambar lama dari disk jika ada
+export async function deleteOldImage(imageUrl: string): Promise<void> {
+  try {
+    const oldFilename = decodeURIComponent(imageUrl.split("/images/")[1]);
+    await fs.unlink(`${UPLOAD_DIR}/${oldFilename}`);
+  } catch {
+    // File tidak ditemukan di disk, abaikan
+  }
+}
