@@ -16,6 +16,7 @@ import {
 } from "../storage/storage-config";
 import { authMiddleware } from "../../../middlewares/auth";
 import { ApplicationVariables } from "../../../model/app-model";
+import { GetProductsRequest } from "../../../model/product-model";
 
 export const productController = new Hono<{
   Variables: ApplicationVariables;
@@ -98,6 +99,30 @@ productController.post("/api/product/:id/image", async (c) => {
       data: { fileLocation },
     },
     201,
+  );
+});
+
+productController.get("/api/products", async (c) => {
+    const request: GetProductsRequest = {
+    page: Number(c.req.query("page") ?? 1),
+    size: Number(c.req.query("size") ?? 10),
+    name: c.req.query("name"),
+    min_price: c.req.query("min_price") ? Number(c.req.query("min_price")) : undefined,
+    max_price: c.req.query("max_price") ? Number(c.req.query("max_price")) : undefined,
+    in_stock: c.req.query("in_stock") === "true",
+    category_slug: c.req.query("category_slug"),
+    sort_by: c.req.query("sort_by") as GetProductsRequest["sort_by"],
+    sort_order: c.req.query("sort_order") as GetProductsRequest["sort_order"],
+  };
+
+  const response = await ProductRepository.getProducts(request);
+
+  return c.json(
+    {
+      status: "success",
+      data: response,
+    },
+    200,
   );
 });
 
