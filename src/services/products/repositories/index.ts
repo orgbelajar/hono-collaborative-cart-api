@@ -6,6 +6,8 @@ import {
   ProductResponse,
   toProductResponse,
   LikesCountResponse,
+  GetProductsRequest,
+  Pageable,
 } from "../../../model/product-model";
 import { nanoid } from "nanoid";
 import NotFoundError from "../../../exceptions/not-found-error";
@@ -28,6 +30,88 @@ export class ProductRepository {
     return toProductResponse(product);
   }
 
+  static async getProducts(
+    request: GetProductsRequest,
+  ): Promise<Pageable<ProductResponse>> {
+    const filters: object[] = [];
+
+    if (request.name) {
+      filters.push({
+        name: {
+          contains: request.name,
+          mode: "insensitive",
+        },
+      });
+    }
+
+    if (request.min_price) {
+      filters.push({
+        price: {
+          gte: request.min_price,
+        },
+      });
+    }
+
+    if (request.max_price) {
+      filters.push({
+        price: {
+          lte: request.max_price,
+        },
+      });
+    }
+
+    // Filter produk yang hanya tersedia (stock > 0)
+    // Jika in_stock = false atau tidak disertakan maka tampilkan semua produk tanpa filter stock, artinya produk yang stock 0 tetap ditampilkan
+    // Jika in_stock = true maka tampilkan produk yang stock > 0
+    if (request.in_stock) {
+      filters.push({
+        stock: {
+          gt: 0,
+        },
+      });
+    }
+
+    // Filter berdasarkan kategori melalui relasi dengan tabel category
+    if (request.category_slug) {
+      filters.push({
+        category: {
+          slug: request.category_slug,
+        },
+      });
+    }
+
+    const skip = (request.page - 1) * request.size;
+
+    const sortBy = request.sort_by ?? "createdAt";
+    const sortOrder = request.sort_order ?? "desc";
+
+    const products = await prisma.product.findMany({
+      where: {
+        AND: filters,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      take: request.size,
+      skip: skip,
+    });
+
+    const total = await prisma.product.count({
+      where: {
+        AND: filters,
+      },
+    });
+
+    return {
+      data: products.map(toProductResponse),
+      paging: {
+        currentPage: request.page,
+        totalItem: total,
+        totalPages: Math.ceil(total / request.size),
+      },
+    };
+  }
+
   static async getProductById(id: string): Promise<ProductResponse> {
     const product = await prisma.product.findUnique({
       where: {
@@ -48,13 +132,13 @@ export class ProductRepository {
   ): Promise<ProductResponse> {
     await this.getProductById(id);
 
+    const dataToUpdate: EditProductRequest = { ...request };
+
     const product = await prisma.product.update({
       where: {
         id,
       },
-      data: {
-        ...request,
-      },
+      data: dataToUpdate,
     });
 
     return toProductResponse(product);
