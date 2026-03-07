@@ -9,7 +9,7 @@ import NotFoundError from "../../../exceptions/not-found-error";
 import InvariantError from "../../../exceptions/invariant-error";
 import { User } from "../../../../generated/prisma/client";
 
-export class CollaborationRepositories {
+export default class CollaborationRepositories {
   // Done
   static async verifyCollaborator(
     cartId: string,

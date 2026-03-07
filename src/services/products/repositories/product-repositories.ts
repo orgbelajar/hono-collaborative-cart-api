@@ -20,7 +20,7 @@ import NotFoundError from "../../../exceptions/not-found-error";
 import InvariantError from "../../../exceptions/invariant-error";
 import { User } from "../../../../generated/prisma/client";
 
-export class ProductRepository {
+export default class ProductRepository {
   static async addProduct(
     request: AddProductRequest,
   ): Promise<ProductCreatedResponse> {

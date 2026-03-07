@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { CollaborationRepositories } from "../repositories/collaboration-repositories";
-import { CartRepositories } from "../../carts/repositories/cart-repositories";
+import CollaborationRepositories from "../repositories/collaboration-repositories";
+import CartRepositories from "../../carts/repositories/cart-repositories";
 import { collaborationPayloadSchema } from "../validator/schema";
 import { authMiddleware } from "../../../middlewares/auth";
 import { ApplicationVariables } from "../../../model/app-model";

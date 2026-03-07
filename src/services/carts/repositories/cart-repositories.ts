@@ -17,10 +17,10 @@ import { nanoid } from "nanoid";
 import NotFoundError from "../../../exceptions/not-found-error";
 import InvariantError from "../../../exceptions/invariant-error";
 import AuthorizationError from "../../../exceptions/authorization-error";
-import { CollaborationRepositories } from "../../collaborations/repositories/collaboration-repositories";
+import CollaborationRepositories from "../../collaborations/repositories/collaboration-repositories";
 import { User } from "../../../../generated/prisma/client";
 
-export class CartRepositories {
+export default class CartRepositories {
   // Done
   static async verifyCartOwner(
     cartId: string,

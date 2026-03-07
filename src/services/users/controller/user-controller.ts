@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { UserRepository } from "../repositories/user-repositories";
+import UserRepository from "../repositories/user-repositories";
+// import { UserRepository } from "../repositories/new-user-repositories";
 import { userPayloadSchema } from "../validator/schema";
 import { ApplicationVariables } from "../../../model/app-model";
 

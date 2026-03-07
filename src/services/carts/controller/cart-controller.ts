@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { CartRepositories } from "../repositories/cart-repositories";
+import CartRepositories from "../repositories/cart-repositories";
 import {
   addCartPayloadSchema,
   addProductToCartPayloadSchema,

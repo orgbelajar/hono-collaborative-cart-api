@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import fs from "fs/promises";
-import { ProductRepository } from "../repositories/product-repositories";
+import ProductRepository from "../repositories/product-repositories";
 import {
   addProductPayloadSchema,
   editProductPayloadSchema,

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { categoryPayloadSchema } from "../validator/schema";
-import { CategoryRepositories } from "../repositories/category-repositories";
+import CategoryRepositories from "../repositories/category-repositories";
 
 export const categoryController = new Hono();
 

@@ -13,7 +13,7 @@ import {
 import { nanoid } from "nanoid";
 import slugify from "slugify";
 
-export class CategoryRepositories {
+export default class CategoryRepositories {
   static async addCategory(
     request: CategoryRequest,
   ): Promise<CategoryResponse> {

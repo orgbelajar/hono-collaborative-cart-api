@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { AuthenticationRepository } from "../repositories/authentication-repositories";
+import AuthenticationRepository from "../repositories/authentication-repositories";
 import {
   verifyUserCredentialPayloadSchema,
   refreshTokenPayloadSchema,
 } from "../validator/schema";
-import { UserRepository } from "../../users/repositories/user-repositories";
+import UserRepository from "../../users/repositories/user-repositories";
 import TokenManager from "../../../security/token-manager";
 
 export const authenticationController = new Hono();

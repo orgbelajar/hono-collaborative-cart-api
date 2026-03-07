@@ -2,7 +2,7 @@ import { prisma } from "../../../applications/database";
 import InvariantError from "../../../exceptions/invariant-error";
 import { RefreshTokenRequest } from "../../../model/auth-model";
 
-export class AuthenticationRepository {
+export default class AuthenticationRepository {
   static async addRefreshToken(request: RefreshTokenRequest): Promise<void> {
     const result = await prisma.authentication.findUnique({
       where: {
