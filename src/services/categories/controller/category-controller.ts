@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { categoryPayloadSchema } from "../validator";
-import { CategoryRepositories } from "../repositories";
+import { categoryPayloadSchema } from "../validator/schema";
+import { CategoryRepositories } from "../repositories/category-repositories";
 
 export const categoryController = new Hono();
 
@@ -74,4 +74,3 @@ categoryController.delete("/api/category/:id", async (c) => {
     200,
   );
 });
-

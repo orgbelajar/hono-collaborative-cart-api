@@ -10,12 +10,14 @@ import {
   DeleteProductFromCartRequest,
   AddCartActivityRequest,
   AddCartPayload,
+  AddCartResponse,
+  toAddCartResponse,
 } from "../../../model/cart-model";
 import { nanoid } from "nanoid";
 import NotFoundError from "../../../exceptions/not-found-error";
 import InvariantError from "../../../exceptions/invariant-error";
 import AuthorizationError from "../../../exceptions/authorization-error";
-import { CollaborationRepositories } from "../../collaborations/repositories/index";
+import { CollaborationRepositories } from "../../collaborations/repositories/collaboration-repositories";
 import { User } from "../../../../generated/prisma/client";
 
 export class CartRepositories {
@@ -89,7 +91,7 @@ export class CartRepositories {
   static async addCart(
     credential: User,
     request: AddCartPayload,
-  ): Promise<{ cartId: string }> {
+  ): Promise<AddCartResponse> {
     const id = `cart-${nanoid(16)}`;
 
     const data = {
@@ -102,7 +104,7 @@ export class CartRepositories {
       data: data,
     });
 
-    return { cartId: cart.id };
+    return toAddCartResponse(cart);
   }
 
   // Done

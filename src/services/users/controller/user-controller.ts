@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { UserRepository } from "../repositories/index";
-import { userPayloadSchema } from "../validator/index";
+import { UserRepository } from "../repositories/user-repositories";
+import { userPayloadSchema } from "../validator/schema";
 import { ApplicationVariables } from "../../../model/app-model";
 
 export const userController = new Hono<{ Variables: ApplicationVariables }>();

@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import { ProductRepository } from "../repositories/index";
+import fs from "fs/promises";
+import { ProductRepository } from "../repositories/product-repositories";
 import {
   addProductPayloadSchema,
   editProductPayloadSchema,
   restockProductPayloadSchema,
-} from "../validator/index";
-import InvariantError from "../../../exceptions/invariant-error";
+} from "../validator/schema";
 import {
   ALLOWED_IMAGE_TYPES,
   deleteOldImage,
@@ -17,6 +17,7 @@ import {
 import { authMiddleware } from "../../../middlewares/auth";
 import { ApplicationVariables } from "../../../model/app-model";
 import { GetProductsRequest } from "../../../model/product-model";
+import ClientError from "../../../exceptions/client-error";
 
 export const productController = new Hono<{
   Variables: ApplicationVariables;
@@ -40,12 +41,18 @@ productController.post("/api/product", async (c) => {
 productController.post("/api/product/:id/image", async (c) => {
   const id = c.req.param("id");
 
-  const body = await c.req.parseBody();
+  // Gunakan { all: true } agar Hono mengembalikan array jika ada lebih dari satu file pada field yang sama
+  const body = await c.req.parseBody({ all: true });
   const file = body["image"];
+
+  // Validasi: hanya boleh satu file (harus dicek SEBELUM instanceof File)
+  if (Array.isArray(file)) {
+    throw new ClientError("Field 'image' hanya boleh berisi satu file");
+  }
 
   // Validasi: pastikan file ada dan bertipe File
   if (!file || !(file instanceof File)) {
-    throw new InvariantError("File gambar wajib diunggah pada field 'image'");
+    throw new ClientError("File gambar wajib diunggah pada field 'image'");
   }
 
   // Validasi: tipe file
@@ -54,17 +61,17 @@ productController.post("/api/product/:id/image", async (c) => {
       file.type as (typeof ALLOWED_IMAGE_TYPES)[number],
     )
   ) {
-    throw new InvariantError(
+    throw new ClientError(
       "Tipe file tidak didukung. Gunakan JPEG, JPG, PNG, atau WebP",
     );
   }
 
   // Validasi: ukuran file
   if (file.size > MAX_FILE_SIZE) {
-    throw new InvariantError("Ukuran file melebihi batas maksimum 5MB");
+    throw new ClientError("Ukuran file melebihi batas maksimum 5MB");
   }
 
-  // Pastikan direktori upload ada
+  // Pastikan direktori upload ada atau buat baru jika tidak ada
   await ensureUploadDir();
 
   // Ambil data produk untuk cek gambar lama
@@ -77,17 +84,26 @@ productController.post("/api/product/:id/image", async (c) => {
   const filepath = `${UPLOAD_DIR}/${filename}`;
 
   // Simpan file ke disk menggunakan Bun API
-  const buffer = await file.arrayBuffer();
-  await Bun.write(filepath, buffer);
+  // Tidak perlu convert ke Buffer karena Bun.write() bisa menerima Blob / File langsung. (hemat RAM untuk file besar)
+  await Bun.write(filepath, file);
 
   // Buat URL lokasi file
   const host = process.env.HOST || "localhost";
   const port = process.env.PORT || 3000;
-  const fileLocation = `http://${host}:${port}/images/${encodeURIComponent(filename)}`;
+  const encodedFilename = encodeURIComponent(filename);
+  const fileLocation = `http://${host}:${port}/images/${encodedFilename}`;
 
-  await ProductRepository.addImageProductById(id, fileLocation);
+  try {
+    await ProductRepository.addOrUpdateImageProductById(id, fileLocation);
+  } catch (error) {
+    // Rollback: hapus file baru dari disk jika update database gagal
+    // agar tidak ada orphan file (file tanpa referensi di DB)
+    await fs.unlink(filepath).catch(() => {});
+    // NotFoundError atau 500 Internal Server Error
+    throw error;
+  }
 
-  // Hapus gambar lama dari disk jika ada
+  // Hapus gambar lama hanya setelah DB berhasil diupdate
   if (existingProduct.image) {
     await deleteOldImage(existingProduct.image);
   }

@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { CartRepositories } from "../repositories/index";
+import { CartRepositories } from "../repositories/cart-repositories";
 import {
   addCartPayloadSchema,
   addProductToCartPayloadSchema,
   deleteProductFromCartPayloadSchema,
-} from "../validator/index";
+} from "../validator/schema";
 import { authMiddleware } from "../../../middlewares/auth";
 import { ApplicationVariables } from "../../../model/app-model";
 

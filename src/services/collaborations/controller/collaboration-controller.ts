@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { CollaborationRepositories } from "../repositories/index";
-import { CartRepositories } from "../../carts/repositories/index";
-import { collaborationPayloadSchema } from "../validator/index";
+import { CollaborationRepositories } from "../repositories/collaboration-repositories";
+import { CartRepositories } from "../../carts/repositories/cart-repositories";
+import { collaborationPayloadSchema } from "../validator/schema";
 import { authMiddleware } from "../../../middlewares/auth";
 import { ApplicationVariables } from "../../../model/app-model";
 

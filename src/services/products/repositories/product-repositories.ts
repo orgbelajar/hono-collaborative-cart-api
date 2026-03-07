@@ -167,7 +167,7 @@ export class ProductRepository {
     return toProductUpdatedResponse(product);
   }
 
-  static async addImageProductById(
+  static async addOrUpdateImageProductById(
     id: string,
     fileLocation: string,
   ): Promise<void> {

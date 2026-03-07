@@ -7,6 +7,6 @@ export const refreshTokenPayloadSchema: ZodType<RefreshTokenRequest> = z.object(
 });
 
 export const verifyUserCredentialPayloadSchema: ZodType<VerifyUserCredentialRequest> = z.object({
-  username: z.string().min(1).max(50),
+  username: z.string().min(1).max(100),
   password: z.string().min(1).max(100),
 });
