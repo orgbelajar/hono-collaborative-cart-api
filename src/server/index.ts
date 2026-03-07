@@ -1,11 +1,12 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import { userController } from "../services/users/controller/index";
-import { productController } from "../services/products/controller/index";
-import { authenticationController } from "../services/authentications/controller/index";
-import { cartController } from "../services/carts/controller/index";
-import { collaborationController } from "../services/collaborations/controller/index";
-import { categoryController } from "../services/categories/controller/index";
+import { userController } from "../services/users/controller/user-controller";
+import { productController } from "../services/products/controller/product-controller";
+import { authenticationController } from "../services/authentications/controller/authentication-controller";
+import { cartController } from "../services/carts/controller/cart-controller";
+import { collaborationController } from "../services/collaborations/controller/collaboration-controller";
+import { categoryController } from "../services/categories/controller/category-controller";
+import { exportController } from "../services/exports/controller/export-controller";
 import ErrorHandler from "../middlewares/error";
 
 const app = new Hono();
@@ -14,10 +15,10 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-// Serving file statis dari folder images
+// Serving file statis dari folder images (akses dari response controller "/api/product/:id/image" fileLocation)
 app.use(
-  "/images/*", // /images/1234567890-foto.jpg (dari fileLocation)
-  // "./src/services/products/files" + "/images/1234567890-foto.jpg"
+  "/images/*", // /images + /1234567890-foto.jpg (nama file)
+  // ./src/services/products/files + /images/ + 1234567890-foto.jpg
   serveStatic({
     root: "./src/services/products/files",
   }),
@@ -29,6 +30,7 @@ app.route("/", productController);
 app.route("/", categoryController);
 app.route("/", cartController);
 app.route("/", collaborationController);
+app.route("/", exportController);
 
 app.onError(ErrorHandler);
 

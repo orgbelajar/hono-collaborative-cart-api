@@ -1,10 +1,11 @@
+import { connect, type NatsConnection } from "@nats-io/transport-node";
 import {
-  connect,
-  type NatsConnection,
+  jetstream,
+  jetstreamManager,
+  RetentionPolicy,
   type JetStreamClient,
   type JetStreamManager,
-  RetentionPolicy,
-} from "nats";
+} from "@nats-io/jetstream";
 import { logger } from "./logging";
 
 let natsConnection: NatsConnection;
@@ -16,15 +17,16 @@ export async function connectNats(): Promise<void> {
 
   natsConnection = await connect({ servers: natsUrl });
 
-  jetStreamManager = await natsConnection.jetstreamManager();
-  jetStreamClient = natsConnection.jetstream();
+  jetStreamManager = await jetstreamManager(natsConnection);
+  jetStreamClient = jetstream(natsConnection);
 
   // Buat stream untuk export jika belum ada
   try {
     await jetStreamManager.streams.add({
       name: "EXPORT",
-      subjects: ["export.>"], // Menangkap semua subject export.*
-      retention: "workqueue" as unknown as RetentionPolicy,
+      subjects: ["export.>"],
+      // Pesan disimpan sampai di-ack oleh consumer
+      retention: RetentionPolicy.Workqueue,
     });
     logger.info(
       "NATS JetStream stream 'EXPORT' berhasil dibuat atau sudah ada",
@@ -39,15 +41,6 @@ export async function connectNats(): Promise<void> {
   }
 
   logger.info(`Terhubung ke NATS server di ${natsUrl}`);
-}
-
-export function getNatsConnection(): NatsConnection {
-  if (!natsConnection) {
-    throw new Error(
-      "NATS belum terhubung. Panggil connectNats() terlebih dahulu.",
-    );
-  }
-  return natsConnection;
 }
 
 export function getJetStreamClient(): JetStreamClient {
