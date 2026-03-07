@@ -11,7 +11,7 @@ import InvariantError from "../../../exceptions/invariant-error";
 import NotFoundError from "../../../exceptions/not-found-error";
 import AuthenticationError from "../../../exceptions/authentication-error";
 
-export class UserRepository {
+export default class UserRepository {
   static async registerUser(
     request: RegisterUserRequest,
   ): Promise<UserResponse> {
@@ -21,8 +21,8 @@ export class UserRepository {
 
     request.password = await Bun.password.hash(request.password, {
       algorithm: "argon2id",
-      memoryCost: 19456,
-      timeCost: 2,
+      memoryCost: 65536,
+      timeCost: 3
     });
 
     const user = await prisma.user.create({
@@ -91,7 +91,7 @@ export class UserRepository {
     );
 
     if (!isPasswordValid) {
-      throw new InvariantError("Password yang anda berikan salah");
+      throw new AuthenticationError ("Password yang anda berikan salah");
     }
 
     return { id, username };
