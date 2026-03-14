@@ -90,6 +90,7 @@ export type WishlistCountResponse = {
   productId: string;
   productName: string;
   wishlist: number;
+  source: string;
 };
 
 export function toProductResponse(product: Product): ProductResponse {

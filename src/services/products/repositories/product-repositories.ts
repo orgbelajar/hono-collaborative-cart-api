@@ -19,6 +19,7 @@ import { nanoid } from "nanoid";
 import NotFoundError from "../../../exceptions/not-found-error";
 import InvariantError from "../../../exceptions/invariant-error";
 import { User } from "../../../../generated/prisma/client";
+import cacheService from "../../../cache/redis-server";
 
 export default class ProductRepository {
   static async addProduct(
@@ -78,7 +79,7 @@ export default class ProductRepository {
     }
 
     // Filter berdasarkan kategori melalui relasi dengan tabel category
-    // JOIN categories c ON p."categoryId" = c.id WHERE c.slug = 'electronics'
+    // JOIN categories c ON p."categoryId" = c.id WHERE c.slug = '....'
     if (request.category_slug) {
       filters.push({
         category: {
@@ -221,6 +222,8 @@ export default class ProductRepository {
         productId,
       },
     });
+
+    cacheService.delete(`product-wishlist:${productId}`);
   }
 
   static async removeFromWishlist(
@@ -243,20 +246,35 @@ export default class ProductRepository {
         id: wishlist.id,
       },
     });
+
+    cacheService.delete(`product-wishlist:${productId}`);
   }
 
   static async getProductWishlist(
     productId: string,
   ): Promise<WishlistCountResponse> {
-    // Cek produk ada + ambil data nama
-    const product = await this.getProductById(productId);
+    const cacheKey = `product-wishlist:${productId}`;
 
-    const wishlist = await prisma.wishlist.count({
-      where: {
-        productId,
-      },
-    });
+    try {
+      const raw = await cacheService.get(cacheKey);
+      const result = JSON.parse(raw);
+      const source = 'cache';
+      return { ...result, source };
+    } catch {
+      // Cache miss, get from database
+      const product = await this.getProductById(productId);
 
-    return { productId, productName: product.name, wishlist };
+      const wishlist = await prisma.wishlist.count({
+        where: {
+          productId,
+        },
+      });
+
+      const source = 'server';
+
+      await cacheService.set(cacheKey, JSON.stringify({ productId, productName: product.name, wishlist }));
+
+      return { productId, productName: product.name, wishlist, source };
+    }
   }
 }

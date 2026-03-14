@@ -258,12 +258,16 @@ productController.get(
 
     const response = await ProductRepository.getProductWishlist(productId);
 
-    return c.json(
+    const returnResponse = c.json(
       {
         status: "success",
         data: response,
       },
       200,
     );
+
+    returnResponse.headers.set("X-Source", response.source);
+
+    return returnResponse;
   },
 );
