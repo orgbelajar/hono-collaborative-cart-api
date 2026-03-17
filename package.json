@@ -1,7 +1,7 @@
 {
   "name": "migrate-hono-bun",
   "scripts": {
-    "dev": "bun run --hot src/server.ts"
+    "start:dev": "bun run --hot src/server.ts"
   },
   "dependencies": {
     "@nats-io/jetstream": "^3.3.1",
