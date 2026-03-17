@@ -30,7 +30,7 @@ exportController.post("/api/export/order/:cartId", async (c) => {
     {
       status: "success",
       message:
-        "Permintaan export laporan pesanan sedang diproses. Laporan pesanan akan dikirim ke email Anda.",
+        "Permintaan export laporan pesanan sedang diproses. Laporan pesanan akan dikirim ke email yang diminta.",
     },
     201,
   );

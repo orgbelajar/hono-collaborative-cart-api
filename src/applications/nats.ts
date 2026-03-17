@@ -7,13 +7,14 @@ import {
   type JetStreamManager,
 } from "@nats-io/jetstream";
 import { logger } from "./logging";
+import config from "../utils/config";
 
 let natsConnection: NatsConnection;
 let jetStreamClient: JetStreamClient;
 let jetStreamManager: JetStreamManager;
 
 export async function connectNats(): Promise<void> {
-  const natsUrl = process.env.NATS_URL || "nats://localhost:4222";
+  const natsUrl = config.nats.url;
 
   natsConnection = await connect({ servers: natsUrl });
 
@@ -54,7 +55,23 @@ export function getJetStreamClient(): JetStreamClient {
 
 export async function closeNats(): Promise<void> {
   if (natsConnection) {
-    await natsConnection.drain();
-    logger.info("Koneksi NATS ditutup");
+    // Jangan lakukan apa pun jika koneksi sudah tertutup atau sedang proses menutup
+    if (natsConnection.isClosed() || natsConnection.isDraining()) {
+      return;
+    }
+
+    try {
+      await natsConnection.drain();
+      logger.info("Koneksi NATS ditutup");
+    } catch (error) {
+      // Abaikan error jika ternyata koneksi sudah mulai menutup di tengah jalan
+      if (
+        (error as Error).message?.includes("draining") ||
+        (error as Error).message?.includes("closed")
+      ) {
+        return;
+      }
+      logger.error(`Error saat menutup koneksi NATS: ${(error as Error).message}`);
+    }
   }
 }

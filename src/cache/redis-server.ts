@@ -5,6 +5,7 @@ class CacheService {
     private client: Redis;
 
     constructor() {
+        // Connect to Redis
         this.client = new Redis({
             host: config.redis.host,
         });
@@ -12,8 +13,6 @@ class CacheService {
         this.client.on('error', (err) => {
             console.error(err);
         });
-
-        this.client.connect();
     }
 
     async set(key: string, value: string, expirationInSecond: number = 1800) {
