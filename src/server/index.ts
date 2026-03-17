@@ -8,12 +8,15 @@ import { collaborationController } from "../services/collaborations/controller/c
 import { categoryController } from "../services/categories/controller/category-controller";
 import { exportController } from "../services/exports/controller/export-controller";
 import ErrorHandler from "../middlewares/error";
+import { cors } from "hono/cors";
 
 const app = new Hono();
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
+
+app.use(cors());
 
 // Serving file statis dari folder images (akses dari response controller "/api/product/:id/image" fileLocation)
 app.use(
