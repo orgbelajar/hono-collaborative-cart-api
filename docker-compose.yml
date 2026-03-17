@@ -1,0 +1,67 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hono-ecommperce-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.container
+    depends_on:
+      - postgres
+      - redis
+      - nats
+    networks:
+      - hono-ecommerce-network
+
+  postgres:
+    image: postgres:18.3
+    container_name: postgres-db
+    env_file:
+      - .env.container
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - hono-ecommerce-network
+
+  adminer:
+    image: adminer:5.4.2
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - hono-ecommerce-network
+
+  redis:
+    image: redis:8.4.2-alpine3.22
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - hono-ecommerce-network
+
+  nats:
+    image: nats:2.12.5-alpine3.22
+    container_name: nats-message-broker
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js", "-sd", "/data", "-m", "8222"]
+    volumes:
+      - nats_data:/data
+    networks:
+      - hono-ecommerce-network
+
+networks:
+  hono-ecommerce-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  nats_data:
