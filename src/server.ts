@@ -2,7 +2,7 @@ import app from "./server/index";
 import { closeNats, connectNats } from "./applications/nats";
 import { logger } from "./applications/logging";
 
-const host = process.env.NODE_ENV !== "production" ? "localhost" : "0.0.0.0";
+const host = process.env.HOST;
 const port = Number(process.env.PORT) || 3000;
 
 // Inisialisasi koneksi NATS untuk pubslisher
@@ -15,7 +15,9 @@ const shutdown = async () => {
   process.exit(0);
 };
   
+// Tangkap sinyal Ctrl+C dari terminal untuk graceful shutdown
 process.on("SIGINT", shutdown);
+// Tangkap sinyal stop dari OS/Docker/PM2 untuk graceful shutdown
 process.on("SIGTERM", shutdown);
 
 export default {
