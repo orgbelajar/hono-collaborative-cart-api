@@ -24,9 +24,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: nabil123
-          POSTGRES_DB: honoecommerceapp_test
+          DATABASE_URL: postgresql://postgres:nabil123@localhost:5432/honoecommerceapp_test
         ports:
           - 5432:5432
         options: >-
