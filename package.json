@@ -1,7 +1,9 @@
 {
   "name": "migrate-hono-bun",
   "scripts": {
-    "start:dev": "bun run --hot src/server.ts"
+    "start:dev": "bun run --hot src/server.ts",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write ."
   },
   "dependencies": {
     "@nats-io/jetstream": "^3.3.1",
@@ -19,6 +21,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.7",
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
     "prisma": "^7.4.1"
