@@ -1,7 +1,7 @@
 const config = {
   app: {
-    host: process.env.HOST,
-    port: process.env.PORT,
+    host: process.env.HOST || "localhost",
+    port: process.env.PORT || 3000,
   },
   redis: {
     host: process.env.REDIS_SERVER,
