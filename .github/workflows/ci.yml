@@ -36,17 +36,17 @@ jobs:
           --health-retries 5
           
       redis:
-        image: redis:8.4.2-alpine3.22
+        image: redis:7-alpine
         ports:
           - 6379:6379
           
       nats:
-        image: nats:2.12.5-alpine3.22
+        image: nats:2.10-alpine
         ports:
           - 4222:4222
           - 8222:8222
-        # Setup nats server with JetStream enabled
-        options: --name nats-message-broker -js
+        # AKTIVASI JETSTREAM: Gunakan 'command', bukan 'options'
+        command: -js
 
     steps:
       - name: Checkout Repository
