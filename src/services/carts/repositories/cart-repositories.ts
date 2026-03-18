@@ -1,24 +1,24 @@
+import { nanoid } from "nanoid";
+import type { User } from "../../../../generated/prisma/client";
 import { prisma } from "../../../applications/database";
+import AuthorizationError from "../../../exceptions/authorization-error";
+import InvariantError from "../../../exceptions/invariant-error";
+import NotFoundError from "../../../exceptions/not-found-error";
 import {
-  AddProductToCartRequest,
-  CartResponse,
-  CartWithProductsResponse,
-  CartActivityResponse,
+  type AddCartActivityRequest,
+  type AddCartPayload,
+  type AddCartResponse,
+  type AddProductToCartRequest,
+  type CartActivityResponse,
+  type CartResponse,
+  type CartWithProductsResponse,
+  type DeleteProductFromCartRequest,
+  toAddCartResponse,
+  toCartActivityResponse,
   toCartResponse,
   toCartWithProductsResponse,
-  toCartActivityResponse,
-  DeleteProductFromCartRequest,
-  AddCartActivityRequest,
-  AddCartPayload,
-  AddCartResponse,
-  toAddCartResponse,
 } from "../../../model/cart-model";
-import { nanoid } from "nanoid";
-import NotFoundError from "../../../exceptions/not-found-error";
-import InvariantError from "../../../exceptions/invariant-error";
-import AuthorizationError from "../../../exceptions/authorization-error";
 import CollaborationRepositories from "../../collaborations/repositories/collaboration-repositories";
-import { User } from "../../../../generated/prisma/client";
 
 export default class CartRepositories {
   // Done
@@ -50,7 +50,7 @@ export default class CartRepositories {
   ): Promise<void> {
     try {
       // Cek apakah dia owner
-      await this.verifyCartOwner(cartId, credential);
+      await CartRepositories.verifyCartOwner(cartId, credential);
       // error berisi AuthorizationError dari pengecekan owner
     } catch (error) {
       // Jika bukan owner (AuthorizationError) dan cart tidak ditemukan akan throw NotFoundError
@@ -213,7 +213,7 @@ export default class CartRepositories {
       data: { stock: product.stock - request.qty },
     });
 
-    await this.addCartActivities(cartId, credential, {
+    await CartRepositories.addCartActivities(cartId, credential, {
       productId: product.id,
       productName: product.name,
       qty: request.qty,
@@ -287,7 +287,7 @@ export default class CartRepositories {
       data: { stock: { increment: 1 } },
     });
 
-    await this.addCartActivities(cartId, credential, {
+    await CartRepositories.addCartActivities(cartId, credential, {
       productId: request.productId,
       productName: cartItem.product.name,
       qty: 1,

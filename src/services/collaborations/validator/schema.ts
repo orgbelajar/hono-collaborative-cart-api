@@ -1,5 +1,5 @@
-import { z, ZodType } from "zod";
-import { CollaborationRequest } from "../../../model/collaboration-model";
+import { type ZodType, z } from "zod";
+import type { CollaborationRequest } from "../../../model/collaboration-model";
 
 export const collaborationPayloadSchema: ZodType<CollaborationRequest> =
   z.object({

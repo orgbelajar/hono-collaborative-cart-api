@@ -1,12 +1,12 @@
 import { Hono } from "hono";
+import type { ApplicationVariables } from "../../../model/app-model";
 import UserRepository from "../repositories/user-repositories";
 // import { UserRepository } from "../repositories/new-user-repositories";
 import { userPayloadSchema } from "../validator/schema";
-import { ApplicationVariables } from "../../../model/app-model";
 
 export const userController = new Hono<{ Variables: ApplicationVariables }>();
 
-userController.post("/api/users", async (c) => {
+userController.post("/api/user", async (c) => {
   const request = userPayloadSchema.parse(await c.req.json());
 
   const response = await UserRepository.registerUser(request);
@@ -21,7 +21,7 @@ userController.post("/api/users", async (c) => {
   );
 });
 
-userController.get("/api/users/:id", async (c) => {
+userController.get("/api/user/:id", async (c) => {
   const id = c.req.param("id");
 
   const response = await UserRepository.getUserById(id);

@@ -1,37 +1,37 @@
-import { Redis } from 'ioredis';
-import config from '../utils/config';
+import { Redis } from "ioredis";
+import config from "../utils/config";
 
 class CacheService {
-    private client: Redis;
+  private client: Redis;
 
-    constructor() {
-        // Connect to Redis
-        this.client = new Redis({
-            host: config.redis.host,
-        });
+  constructor() {
+    // Connect to Redis
+    this.client = new Redis({
+      host: config.redis.host,
+    });
 
-        this.client.on('error', (err) => {
-            console.error(err);
-        });
+    this.client.on("error", (err) => {
+      console.error(err);
+    });
+  }
+
+  async set(key: string, value: string, expirationInSecond: number = 1800) {
+    await this.client.set(key, value, "EX", expirationInSecond);
+  }
+
+  async get(key: string) {
+    const result = await this.client.get(key);
+
+    if (result === null) {
+      throw new Error("Cache tidak ditemukan");
     }
 
-    async set(key: string, value: string, expirationInSecond: number = 1800) {
-        await this.client.set(key, value, 'EX', expirationInSecond);
-    }
+    return result;
+  }
 
-    async get(key: string) {
-        const result = await this.client.get(key);
-
-        if (result === null) {
-            throw new Error('Cache tidak ditemukan');
-        }
-
-        return result;
-    }
-
-    delete(key: string) {
-        this.client.del(key);
-    }
+  delete(key: string) {
+    this.client.del(key);
+  }
 }
 
 export default new CacheService();

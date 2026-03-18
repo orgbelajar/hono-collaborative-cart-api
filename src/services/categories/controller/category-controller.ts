@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { categoryPayloadSchema } from "../validator/schema";
 import CategoryRepositories from "../repositories/category-repositories";
+import { categoryPayloadSchema } from "../validator/schema";
 
 export const categoryController = new Hono();
 
@@ -19,7 +19,7 @@ categoryController.post("/api/category", async (c) => {
   );
 });
 
-categoryController.get("api/categories", async (c) => {
+categoryController.get("/api/categories", async (c) => {
   const response = await CategoryRepositories.getCategories();
 
   return c.json(

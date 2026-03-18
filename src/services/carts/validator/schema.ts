@@ -1,7 +1,7 @@
-import { z, ZodType } from "zod";
-import {
-  AddProductToCartRequest,
+import { type ZodType, z } from "zod";
+import type {
   AddCartPayload,
+  AddProductToCartRequest,
   DeleteProductFromCartPayload,
 } from "../../../model/cart-model";
 

@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import CollaborationRepositories from "../repositories/collaboration-repositories";
-import CartRepositories from "../../carts/repositories/cart-repositories";
-import { collaborationPayloadSchema } from "../validator/schema";
 import { authMiddleware } from "../../../middlewares/auth";
-import { ApplicationVariables } from "../../../model/app-model";
+import type { ApplicationVariables } from "../../../model/app-model";
+import CartRepositories from "../../carts/repositories/cart-repositories";
+import CollaborationRepositories from "../repositories/collaboration-repositories";
+import { collaborationPayloadSchema } from "../validator/schema";
 
 export const collaborationController = new Hono<{
   Variables: ApplicationVariables;

@@ -1,5 +1,5 @@
-import { getJetStreamClient } from "../../../applications/nats";
 import { logger } from "../../../applications/logging";
+import { getJetStreamClient } from "../../../applications/nats";
 import type { ExportOrderMessage } from "../../../model/export-model";
 
 export const ExportService = {

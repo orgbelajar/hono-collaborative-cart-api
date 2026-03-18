@@ -1,17 +1,17 @@
+import { nanoid } from "nanoid";
+import slugify from "slugify";
 import { prisma } from "../../../applications/database";
-import NotFoundError from "../../../exceptions/not-found-error";
 import InvariantError from "../../../exceptions/invariant-error";
+import NotFoundError from "../../../exceptions/not-found-error";
 import {
-  CategoryRequest,
-  CategoryResponse,
-  CategoryWithProductsResponse,
+  type CategoryRequest,
+  type CategoryResponse,
+  type CategoryWithProductsResponse,
   toAddCategoryResponse,
   toEditCategoryResponse,
   toGetCategoryByIdResponse,
   toGetCategoryWithProductsResponse,
 } from "../../../model/category-model";
-import { nanoid } from "nanoid";
-import slugify from "slugify";
 
 export default class CategoryRepositories {
   static async addCategory(
@@ -74,7 +74,7 @@ export default class CategoryRepositories {
     id: string,
     request: CategoryRequest,
   ): Promise<CategoryResponse> {
-    await this.getCategoryById(id);
+    await CategoryRepositories.getCategoryById(id);
 
     const baseSlug = slugify(request.name, { lower: true });
     const slug = `${baseSlug}-${id.slice(-5)}`;
@@ -93,7 +93,7 @@ export default class CategoryRepositories {
   }
 
   static async deleteCategoryById(id: string): Promise<void> {
-    await this.getCategoryById(id);
+    await CategoryRepositories.getCategoryById(id);
 
     // Cek apakah masih ada produk di kategori ini
     const productCount = await prisma.product.count({

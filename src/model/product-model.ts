@@ -1,4 +1,4 @@
-import { Product } from "../../generated/prisma/client";
+import type { Product } from "../../generated/prisma/client";
 
 export type AddProductRequest = {
   name: string;
@@ -63,7 +63,6 @@ export type ProductDetailResponse = {
   updatedAt: Date;
 };
 
-
 export type ProductCreatedResponse = {
   id: string;
   name: string;
@@ -105,7 +104,9 @@ export function toProductResponse(product: Product): ProductResponse {
   };
 }
 
-export const toProductDetailResponse = (product: Product): ProductDetailResponse => ({
+export const toProductDetailResponse = (
+  product: Product,
+): ProductDetailResponse => ({
   id: product.id,
   name: product.name,
   description: product.description ?? undefined,
@@ -114,10 +115,12 @@ export const toProductDetailResponse = (product: Product): ProductDetailResponse
   stock: product.stock,
   categoryId: product.categoryId,
   createdAt: product.createdAt,
-  updatedAt: product.updatedAt, 
+  updatedAt: product.updatedAt,
 });
 
-export const toProductCreatedResponse = (product: Product): ProductCreatedResponse => ({
+export const toProductCreatedResponse = (
+  product: Product,
+): ProductCreatedResponse => ({
   id: product.id,
   name: product.name,
   description: product.description,
@@ -128,7 +131,9 @@ export const toProductCreatedResponse = (product: Product): ProductCreatedRespon
   createdAt: product.createdAt,
 });
 
-export const toProductUpdatedResponse = (product: Product): ProductUpdatedResponse => ({
+export const toProductUpdatedResponse = (
+  product: Product,
+): ProductUpdatedResponse => ({
   id: product.id,
   name: product.name,
   description: product.description,

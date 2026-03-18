@@ -1,12 +1,12 @@
 import { Hono } from "hono";
+import { authMiddleware } from "../../../middlewares/auth";
+import type { ApplicationVariables } from "../../../model/app-model";
 import CartRepositories from "../repositories/cart-repositories";
 import {
   addCartPayloadSchema,
   addProductToCartPayloadSchema,
   deleteProductFromCartPayloadSchema,
 } from "../validator/schema";
-import { authMiddleware } from "../../../middlewares/auth";
-import { ApplicationVariables } from "../../../model/app-model";
 
 export const cartController = new Hono<{ Variables: ApplicationVariables }>();
 
@@ -95,7 +95,7 @@ cartController.get("/api/cart/:id/products", async (c) => {
 });
 
 // Done
-cartController.delete("/api/carts/:id/products", async (c) => {
+cartController.delete("/api/cart/:id/products", async (c) => {
   const request = deleteProductFromCartPayloadSchema.parse(await c.req.json());
   const cartId = c.req.param("id");
   const credential = c.get("user");

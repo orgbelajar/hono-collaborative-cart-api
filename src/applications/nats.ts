@@ -1,13 +1,13 @@
-import { connect, type NatsConnection } from "@nats-io/transport-node";
 import {
+  type JetStreamClient,
+  type JetStreamManager,
   jetstream,
   jetstreamManager,
   RetentionPolicy,
-  type JetStreamClient,
-  type JetStreamManager,
 } from "@nats-io/jetstream";
-import { logger } from "./logging";
+import { connect, type NatsConnection } from "@nats-io/transport-node";
 import config from "../utils/config";
+import { logger } from "./logging";
 
 let natsConnection: NatsConnection;
 let jetStreamClient: JetStreamClient;
@@ -71,7 +71,9 @@ export async function closeNats(): Promise<void> {
       ) {
         return;
       }
-      logger.error(`Error saat menutup koneksi NATS: ${(error as Error).message}`);
+      logger.error(
+        `Error saat menutup koneksi NATS: ${(error as Error).message}`,
+      );
     }
   }
 }

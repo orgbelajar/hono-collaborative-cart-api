@@ -15,7 +15,7 @@ const config = {
   jwt: {
     access_token_key: process.env.ACCESS_TOKEN_KEY,
     refresh_token_key: process.env.REFRESH_TOKEN_KEY,
-  }
+  },
 };
 
 export default config;

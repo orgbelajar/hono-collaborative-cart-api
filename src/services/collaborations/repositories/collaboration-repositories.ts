@@ -1,13 +1,13 @@
+import { nanoid } from "nanoid";
+import type { User } from "../../../../generated/prisma/client";
 import { prisma } from "../../../applications/database";
+import InvariantError from "../../../exceptions/invariant-error";
+import NotFoundError from "../../../exceptions/not-found-error";
 import {
-  CollaborationRequest,
-  CollaborationResponse,
+  type CollaborationRequest,
+  type CollaborationResponse,
   toCollaborationResponse,
 } from "../../../model/collaboration-model";
-import { nanoid } from "nanoid";
-import NotFoundError from "../../../exceptions/not-found-error";
-import InvariantError from "../../../exceptions/invariant-error";
-import { User } from "../../../../generated/prisma/client";
 
 export default class CollaborationRepositories {
   // Done

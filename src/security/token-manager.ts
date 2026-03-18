@@ -6,12 +6,18 @@ const TokenManager = {
   generateAccessToken: (payload: Record<string, unknown>) => {
     const now = Math.floor(Date.now() / 1000);
     const expiredAt = now + 60 * 60 * 3;
-    return sign({ ...payload, iat: now, exp: expiredAt }, config.jwt.access_token_key!);
+    return sign(
+      { ...payload, iat: now, exp: expiredAt },
+      config.jwt.access_token_key!,
+    );
   },
   generateRefreshToken: (payload: Record<string, unknown>) => {
     const now = Math.floor(Date.now() / 1000);
     const expiredAt = now + 60 * 60 * 24 * 7;
-    return sign({ ...payload, iat: now, exp: expiredAt }, config.jwt.refresh_token_key!);
+    return sign(
+      { ...payload, iat: now, exp: expiredAt },
+      config.jwt.refresh_token_key!,
+    );
   },
   verifyAccessToken: async (accessToken: string) => {
     try {
@@ -23,7 +29,9 @@ const TokenManager = {
       return payload; // mengembalikan payload yang berisi user id dan username
     } catch (error) {
       console.log(error);
-      throw new InvariantError("Access token tidak valid atau sudah kedaluwarsa!");
+      throw new InvariantError(
+        "Access token tidak valid atau sudah kedaluwarsa!",
+      );
     }
   },
   verifyRefreshToken: async (refreshToken: string) => {
@@ -36,7 +44,9 @@ const TokenManager = {
       return payload; //
     } catch (error) {
       console.log(error);
-      throw new InvariantError("Refresh token tidak valid atau sudah kedaluwarsa!");
+      throw new InvariantError(
+        "Refresh token tidak valid atau sudah kedaluwarsa!",
+      );
     }
   },
 };

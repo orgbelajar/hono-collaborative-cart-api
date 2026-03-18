@@ -1,4 +1,4 @@
-import { MiddlewareHandler } from "hono";
+import type { MiddlewareHandler } from "hono";
 import TokenManager from "../security/token-manager";
 // import { verify } from "hono/jwt";
 

@@ -1,11 +1,10 @@
+import fs from "node:fs/promises";
 import { Hono } from "hono";
-import fs from "fs/promises";
+import ClientError from "../../../exceptions/client-error";
+import { authMiddleware } from "../../../middlewares/auth";
+import type { ApplicationVariables } from "../../../model/app-model";
+import type { GetProductsRequest } from "../../../model/product-model";
 import ProductRepository from "../repositories/product-repositories";
-import {
-  addProductPayloadSchema,
-  editProductPayloadSchema,
-  restockProductPayloadSchema,
-} from "../validator/schema";
 import {
   ALLOWED_IMAGE_TYPES,
   deleteOldImage,
@@ -14,10 +13,11 @@ import {
   MIME_TO_EXT,
   UPLOAD_DIR,
 } from "../storage/storage-config";
-import { authMiddleware } from "../../../middlewares/auth";
-import { ApplicationVariables } from "../../../model/app-model";
-import { GetProductsRequest } from "../../../model/product-model";
-import ClientError from "../../../exceptions/client-error";
+import {
+  addProductPayloadSchema,
+  editProductPayloadSchema,
+  restockProductPayloadSchema,
+} from "../validator/schema";
 
 export const productController = new Hono<{
   Variables: ApplicationVariables;
@@ -43,7 +43,7 @@ productController.post("/api/product/:id/image", async (c) => {
 
   // Gunakan { all: true } agar Hono mengembalikan array jika ada lebih dari satu file pada field yang sama
   const body = await c.req.parseBody({ all: true });
-  const file = body["image"];
+  const file = body.image;
 
   // Validasi: hanya boleh satu file (harus dicek SEBELUM instanceof File)
   if (Array.isArray(file)) {
@@ -251,7 +251,7 @@ productController.delete(
 );
 
 productController.get(
-  "/api/product/:id/wishlist",
+  "/api/product/:id/wishlists",
   authMiddleware,
   async (c) => {
     const productId = c.req.param("id");

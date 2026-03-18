@@ -1,4 +1,4 @@
-import { CartSharedUser } from "../../generated/prisma/client";
+import type { CartSharedUser } from "../../generated/prisma/client";
 
 export type CollaborationRequest = {
   cartId: string;

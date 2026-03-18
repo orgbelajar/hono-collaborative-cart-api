@@ -1,14 +1,14 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import { userController } from "../services/users/controller/user-controller";
-import { productController } from "../services/products/controller/product-controller";
+import { cors } from "hono/cors";
+import ErrorHandler from "../middlewares/error";
 import { authenticationController } from "../services/authentications/controller/authentication-controller";
 import { cartController } from "../services/carts/controller/cart-controller";
-import { collaborationController } from "../services/collaborations/controller/collaboration-controller";
 import { categoryController } from "../services/categories/controller/category-controller";
+import { collaborationController } from "../services/collaborations/controller/collaboration-controller";
 import { exportController } from "../services/exports/controller/export-controller";
-import ErrorHandler from "../middlewares/error";
-import { cors } from "hono/cors";
+import { productController } from "../services/products/controller/product-controller";
+import { userController } from "../services/users/controller/user-controller";
 
 const app = new Hono();
 

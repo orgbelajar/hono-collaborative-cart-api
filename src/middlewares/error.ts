@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { ZodError } from "zod";
 import { ClientError } from "../exceptions/index";
+
 // import { logger } from "../applications/logging";
 
 const ErrorHandler = (err: Error, c: Context) => {

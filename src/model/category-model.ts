@@ -1,5 +1,5 @@
-import { Category, Product } from "../../generated/prisma/client";
-import { toProductResponse, ProductResponse } from "./product-model";
+import type { Category, Product } from "../../generated/prisma/client";
+import { type ProductResponse, toProductResponse } from "./product-model";
 
 export type CategoryRequest = {
   name: string;

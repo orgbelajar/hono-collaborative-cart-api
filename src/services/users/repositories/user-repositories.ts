@@ -1,28 +1,28 @@
-import { prisma } from "../../../applications/database";
-import {
-  RegisterUserRequest,
-  UserResponse,
-  toUserResponse,
-  VerifyUsernameRequest,
-  VerifyUserCredentialRequest,
-} from "../../../model/user-model";
 import { nanoid } from "nanoid";
+import { prisma } from "../../../applications/database";
+import AuthenticationError from "../../../exceptions/authentication-error";
 import InvariantError from "../../../exceptions/invariant-error";
 import NotFoundError from "../../../exceptions/not-found-error";
-import AuthenticationError from "../../../exceptions/authentication-error";
+import {
+  type RegisterUserRequest,
+  toUserResponse,
+  type UserResponse,
+  type VerifyUserCredentialRequest,
+  type VerifyUsernameRequest,
+} from "../../../model/user-model";
 
 export default class UserRepository {
   static async registerUser(
     request: RegisterUserRequest,
   ): Promise<UserResponse> {
-    await this.verifyNewUsername(request);
+    await UserRepository.verifyNewUsername(request);
 
     const id = `user-${nanoid(17)}`;
 
     request.password = await Bun.password.hash(request.password, {
       algorithm: "argon2id",
       memoryCost: 65536,
-      timeCost: 3
+      timeCost: 3,
     });
 
     const user = await prisma.user.create({
@@ -44,7 +44,7 @@ export default class UserRepository {
       },
     });
 
-    if (totalUserWithSameUsername != 0) {
+    if (totalUserWithSameUsername !== 0) {
       throw new InvariantError(
         "Username sudah terdaftar, mohon pilih username lain",
       );
@@ -91,7 +91,7 @@ export default class UserRepository {
     );
 
     if (!isPasswordValid) {
-      throw new AuthenticationError ("Password yang anda berikan salah");
+      throw new AuthenticationError("Password yang anda berikan salah");
     }
 
     return { id, username };

@@ -1,25 +1,25 @@
-import { prisma } from "../../../applications/database";
-import {
-  AddProductRequest,
-  EditProductRequest,
-  RestockProductRequest,
-  ProductResponse,
-  ProductDetailResponse,
-  toProductResponse,
-  GetProductsRequest,
-  Pageable,
-  WishlistCountResponse,
-  toProductDetailResponse,
-  ProductUpdatedResponse,
-  toProductUpdatedResponse,
-  ProductCreatedResponse,
-  toProductCreatedResponse,
-} from "../../../model/product-model";
 import { nanoid } from "nanoid";
-import NotFoundError from "../../../exceptions/not-found-error";
-import InvariantError from "../../../exceptions/invariant-error";
-import { User } from "../../../../generated/prisma/client";
+import type { User } from "../../../../generated/prisma/client";
+import { prisma } from "../../../applications/database";
 import cacheService from "../../../cache/redis-server";
+import InvariantError from "../../../exceptions/invariant-error";
+import NotFoundError from "../../../exceptions/not-found-error";
+import {
+  type AddProductRequest,
+  type EditProductRequest,
+  type GetProductsRequest,
+  type Pageable,
+  type ProductCreatedResponse,
+  type ProductDetailResponse,
+  type ProductResponse,
+  type ProductUpdatedResponse,
+  type RestockProductRequest,
+  toProductCreatedResponse,
+  toProductDetailResponse,
+  toProductResponse,
+  toProductUpdatedResponse,
+  type WishlistCountResponse,
+} from "../../../model/product-model";
 
 export default class ProductRepository {
   static async addProduct(
@@ -138,7 +138,7 @@ export default class ProductRepository {
     id: string,
     request: EditProductRequest,
   ): Promise<ProductUpdatedResponse> {
-    await this.getProductById(id);
+    await ProductRepository.getProductById(id);
 
     const dataToUpdate: EditProductRequest = { ...request };
 
@@ -156,7 +156,7 @@ export default class ProductRepository {
     id: string,
     request: RestockProductRequest,
   ): Promise<ProductUpdatedResponse> {
-    await this.getProductById(id);
+    await ProductRepository.getProductById(id);
 
     const product = await prisma.product.update({
       where: { id },
@@ -172,7 +172,7 @@ export default class ProductRepository {
     id: string,
     fileLocation: string,
   ): Promise<void> {
-    await this.getProductById(id);
+    await ProductRepository.getProductById(id);
 
     await prisma.product.update({
       where: {
@@ -185,7 +185,7 @@ export default class ProductRepository {
   }
 
   static async deleteProductById(id: string): Promise<void> {
-    await this.getProductById(id);
+    await ProductRepository.getProductById(id);
 
     await prisma.product.delete({
       where: {
@@ -199,7 +199,7 @@ export default class ProductRepository {
     credential: User,
   ): Promise<void> {
     // Cek produk ada
-    await this.getProductById(productId);
+    await ProductRepository.getProductById(productId);
 
     // Cek apakah sudah pernah wishlist
     const existingWishlist = await prisma.wishlist.findFirst({
@@ -258,11 +258,11 @@ export default class ProductRepository {
     try {
       const raw = await cacheService.get(cacheKey);
       const result = JSON.parse(raw);
-      const source = 'cache';
+      const source = "cache";
       return { ...result, source };
     } catch {
       // Cache miss, get from database
-      const product = await this.getProductById(productId);
+      const product = await ProductRepository.getProductById(productId);
 
       const wishlist = await prisma.wishlist.count({
         where: {
@@ -270,9 +270,12 @@ export default class ProductRepository {
         },
       });
 
-      const source = 'server';
+      const source = "server";
 
-      await cacheService.set(cacheKey, JSON.stringify({ productId, productName: product.name, wishlist }));
+      await cacheService.set(
+        cacheKey,
+        JSON.stringify({ productId, productName: product.name, wishlist }),
+      );
 
       return { productId, productName: product.name, wishlist, source };
     }

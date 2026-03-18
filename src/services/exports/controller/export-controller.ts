@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../../../middlewares/auth";
-import { ApplicationVariables } from "../../../model/app-model";
-import { exportOrderPayloadSchema } from "../validator/schema";
-import { ExportService } from "../publishers/export-service";
+import type { ApplicationVariables } from "../../../model/app-model";
 import type { ExportOrderMessage } from "../../../model/export-model";
+import { ExportService } from "../publishers/export-service";
+import { exportOrderPayloadSchema } from "../validator/schema";
 
 export const exportController = new Hono<{
   Variables: ApplicationVariables;

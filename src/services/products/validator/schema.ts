@@ -1,5 +1,5 @@
-import { z, ZodType } from "zod";
-import {
+import { type ZodType, z } from "zod";
+import type {
   AddProductRequest,
   EditProductRequest,
   RestockProductRequest,

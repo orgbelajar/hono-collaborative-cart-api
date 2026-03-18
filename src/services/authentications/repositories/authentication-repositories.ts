@@ -1,6 +1,6 @@
 import { prisma } from "../../../applications/database";
 import InvariantError from "../../../exceptions/invariant-error";
-import { RefreshTokenRequest } from "../../../model/auth-model";
+import type { RefreshTokenRequest } from "../../../model/auth-model";
 
 export default class AuthenticationRepository {
   static async addRefreshToken(request: RefreshTokenRequest): Promise<void> {

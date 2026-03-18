@@ -1,4 +1,8 @@
-import { Cart, CartItem, CartActivity } from "../../generated/prisma/client";
+import type {
+  Cart,
+  CartActivity,
+  CartItem,
+} from "../../generated/prisma/client";
 
 export type AddCartPayload = {
   name: string;
