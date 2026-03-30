@@ -12,9 +12,7 @@ import {
 } from "../../../model/user-model";
 
 export default class UserRepository {
-  static async registerUser(
-    request: RegisterUserRequest,
-  ): Promise<UserResponse> {
+  static async registerUser(request: RegisterUserRequest): Promise<UserResponse> {
     await UserRepository.verifyNewUsername(request);
 
     const id = `user-${nanoid(17)}`;
@@ -35,9 +33,7 @@ export default class UserRepository {
     return toUserResponse(user);
   }
 
-  static async verifyNewUsername(
-    request: VerifyUsernameRequest,
-  ): Promise<void> {
+  static async verifyNewUsername(request: VerifyUsernameRequest): Promise<void> {
     const totalUserWithSameUsername = await prisma.user.count({
       where: {
         username: request.username,
@@ -45,9 +41,7 @@ export default class UserRepository {
     });
 
     if (totalUserWithSameUsername !== 0) {
-      throw new InvariantError(
-        "Username sudah terdaftar, mohon pilih username lain",
-      );
+      throw new InvariantError("Username sudah terdaftar, mohon pilih username lain");
     }
   }
 
@@ -85,10 +79,7 @@ export default class UserRepository {
 
     const { id, username, password: hashedPassword } = user;
 
-    const isPasswordValid = await Bun.password.verify(
-      request.password,
-      hashedPassword,
-    );
+    const isPasswordValid = await Bun.password.verify(request.password, hashedPassword);
 
     if (!isPasswordValid) {
       throw new AuthenticationError("Password yang anda berikan salah");

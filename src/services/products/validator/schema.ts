@@ -20,7 +20,6 @@ export const editProductPayloadSchema: ZodType<EditProductRequest> = z.object({
   categoryId: z.string().min(1).max(50).optional(),
 });
 
-export const restockProductPayloadSchema: ZodType<RestockProductRequest> =
-  z.object({
-    stock: z.number().int().min(1),
-  });
+export const restockProductPayloadSchema: ZodType<RestockProductRequest> = z.object({
+  stock: z.number().int().min(1),
+});

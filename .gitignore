@@ -8,4 +8,6 @@ node_modules/
 .env
 .env.*
 
-*.stackdumpsrc/services/products/files/images/*.jpeg
+*.stackdump
+
+src/services/products/files/images/*.jpeg

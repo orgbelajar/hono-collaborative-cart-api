@@ -29,9 +29,7 @@ export async function connectNats(): Promise<void> {
       // Pesan disimpan sampai di-ack oleh consumer
       retention: RetentionPolicy.Workqueue,
     });
-    logger.info(
-      "NATS JetStream stream 'EXPORT' berhasil dibuat atau sudah ada",
-    );
+    logger.info("NATS JetStream stream 'EXPORT' berhasil dibuat atau sudah ada");
   } catch (error: unknown) {
     // Stream sudah ada, update saja
     if (error instanceof Error && error.message?.includes("already in use")) {
@@ -46,9 +44,7 @@ export async function connectNats(): Promise<void> {
 
 export function getJetStreamClient(): JetStreamClient {
   if (!jetStreamClient) {
-    throw new Error(
-      "JetStream belum tersedia. Panggil connectNats() terlebih dahulu.",
-    );
+    throw new Error("JetStream belum tersedia. Panggil connectNats() terlebih dahulu.");
   }
   return jetStreamClient;
 }
@@ -71,9 +67,7 @@ export async function closeNats(): Promise<void> {
       ) {
         return;
       }
-      logger.error(
-        `Error saat menutup koneksi NATS: ${(error as Error).message}`,
-      );
+      logger.error(`Error saat menutup koneksi NATS: ${(error as Error).message}`);
     }
   }
 }

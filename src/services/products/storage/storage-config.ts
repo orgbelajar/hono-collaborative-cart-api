@@ -2,18 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 // Path absolut ke direktori penyimpanan gambar
-export const UPLOAD_DIR = path.resolve(
-  process.cwd(),
-  "src/services/products/files/images",
-);
+export const UPLOAD_DIR = path.resolve(process.cwd(), "src/services/products/files/images");
 
 // Tipe file yang diizinkan
-export const ALLOWED_IMAGE_TYPES = [
-  "image/jpg",
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-] as const;
+export const ALLOWED_IMAGE_TYPES = ["image/jpg", "image/jpeg", "image/png", "image/webp"] as const;
 
 // Maksimum ukuran file (5MB)
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;

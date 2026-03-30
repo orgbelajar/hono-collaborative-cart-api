@@ -98,9 +98,7 @@ describe("Carts API (Collaborative)", () => {
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body.status).toBe("success");
-    expect(body.message).toBe(
-      "Produk berhasil ditambahkan ke keranjang belanja",
-    );
+    expect(body.message).toBe("Produk berhasil ditambahkan ke keranjang belanja");
   });
 
   it("GET /api/cart/:id/products should return products in cart", async () => {
@@ -150,9 +148,7 @@ describe("Carts API (Collaborative)", () => {
 
     expect(resDel.status).toBe(200);
     const bodyDel = await resDel.json();
-    expect(bodyDel.message).toBe(
-      "Produk berhasil dihapus dari keranjang belanja",
-    );
+    expect(bodyDel.message).toBe("Produk berhasil dihapus dari keranjang belanja");
 
     // 2. Verifikasi quantity berkurang dari 5 ke 4
     const resGet1 = await app.request(`/api/cart/${cartId}/products`, {

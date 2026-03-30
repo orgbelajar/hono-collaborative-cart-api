@@ -11,9 +11,7 @@ export type CollaborationResponse = {
   userId: string;
 };
 
-export function toCollaborationResponse(
-  collaboration: CartSharedUser,
-): CollaborationResponse {
+export function toCollaborationResponse(collaboration: CartSharedUser): CollaborationResponse {
   return {
     id: collaboration.id,
     cartId: collaboration.cartId,

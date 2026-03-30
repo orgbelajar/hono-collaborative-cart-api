@@ -22,9 +22,7 @@ import {
 } from "../../../model/product-model";
 
 export default class ProductRepository {
-  static async addProduct(
-    request: AddProductRequest,
-  ): Promise<ProductCreatedResponse> {
+  static async addProduct(request: AddProductRequest): Promise<ProductCreatedResponse> {
     const id = `product-${nanoid(17)}`;
 
     const product = await prisma.product.create({
@@ -37,9 +35,7 @@ export default class ProductRepository {
     return toProductCreatedResponse(product);
   }
 
-  static async getProducts(
-    request: GetProductsRequest,
-  ): Promise<Pageable<ProductResponse>> {
+  static async getProducts(request: GetProductsRequest): Promise<Pageable<ProductResponse>> {
     const filters: object[] = [];
 
     if (request.name) {
@@ -168,10 +164,7 @@ export default class ProductRepository {
     return toProductUpdatedResponse(product);
   }
 
-  static async addOrUpdateImageProductById(
-    id: string,
-    fileLocation: string,
-  ): Promise<void> {
+  static async addOrUpdateImageProductById(id: string, fileLocation: string): Promise<void> {
     await ProductRepository.getProductById(id);
 
     await prisma.product.update({
@@ -194,10 +187,7 @@ export default class ProductRepository {
     });
   }
 
-  static async wishlistProduct(
-    productId: string,
-    credential: User,
-  ): Promise<void> {
+  static async wishlistProduct(productId: string, credential: User): Promise<void> {
     // Cek produk ada
     await ProductRepository.getProductById(productId);
 
@@ -226,10 +216,7 @@ export default class ProductRepository {
     cacheService.delete(`product-wishlist:${productId}`);
   }
 
-  static async removeFromWishlist(
-    productId: string,
-    credential: User,
-  ): Promise<void> {
+  static async removeFromWishlist(productId: string, credential: User): Promise<void> {
     const wishlist = await prisma.wishlist.findFirst({
       where: {
         userId: credential.id,
@@ -250,9 +237,7 @@ export default class ProductRepository {
     cacheService.delete(`product-wishlist:${productId}`);
   }
 
-  static async getProductWishlist(
-    productId: string,
-  ): Promise<WishlistCountResponse> {
+  static async getProductWishlist(productId: string): Promise<WishlistCountResponse> {
     const cacheKey = `product-wishlist:${productId}`;
 
     try {

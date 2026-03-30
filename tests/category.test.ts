@@ -70,9 +70,7 @@ describe("Categories API", () => {
     expect(body.status).toBe("success");
     expect(body.data.name).toBe("Elektronik Updated");
     expect(Array.isArray(body.data.products)).toBe(true);
-    expect(
-      body.data.products.some((p: any) => p.name === "Produk Kategori Test"),
-    ).toBe(true);
+    expect(body.data.products.some((p: any) => p.name === "Produk Kategori Test")).toBe(true);
 
     // 3. Bersihkan produk agar kategori bisa dihapus
     await app.request(`/api/product/${productId}`, { method: "DELETE" });

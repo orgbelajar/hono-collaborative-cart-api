@@ -82,11 +82,7 @@ describe("Products API", () => {
   it("POST /api/product/:id/image should upload product image", async () => {
     const formData = new FormData();
     // Mengirim blob sebagai file palsu
-    formData.append(
-      "image",
-      new Blob(["fake-image-data"], { type: "image/jpeg" }),
-      "test.jpg",
-    );
+    formData.append("image", new Blob(["fake-image-data"], { type: "image/jpeg" }), "test.jpg");
 
     const res = await app.request(`/api/product/${productId}/image`, {
       method: "POST",

@@ -1,8 +1,4 @@
-import type {
-  Cart,
-  CartActivity,
-  CartItem,
-} from "../../generated/prisma/client";
+import type { Cart, CartActivity, CartItem } from "../../generated/prisma/client";
 
 export type AddCartPayload = {
   name: string;
@@ -100,9 +96,7 @@ export function toCartWithProductsResponse(
   };
 }
 
-export function toCartActivityResponse(
-  activity: CartActivity,
-): CartActivityResponse {
+export function toCartActivityResponse(activity: CartActivity): CartActivityResponse {
   return {
     username: activity.username,
     productName: activity.productName,

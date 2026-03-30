@@ -46,9 +46,7 @@ describe("Users API", () => {
     const body = await res.json();
     expect(body.status).toBe("success");
     expect(Array.isArray(body.data)).toBe(true);
-    expect(body.data.some((u: any) => u.username === randomUsername)).toBe(
-      true,
-    );
+    expect(body.data.some((u: any) => u.username === randomUsername)).toBe(true);
   });
 
   it("POST /api/authentication should login and return tokens", async () => {

@@ -7,9 +7,7 @@ export const authMiddleware: MiddlewareHandler = async (c, next) => {
 
   if (token && token.indexOf("Bearer ") !== -1) {
     try {
-      const user = await TokenManager.verifyAccessToken(
-        token.split("Bearer ")[1],
-      );
+      const user = await TokenManager.verifyAccessToken(token.split("Bearer ")[1]);
       // Bila verifikasi berhasil, payload token (misalnya data user) akan disimpan di context
       c.set("user", user); // contain id & username user
       await next();
