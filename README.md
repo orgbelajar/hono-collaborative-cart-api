@@ -473,21 +473,6 @@ graph LR
 
 ---
 
-## Contributing
-
-Contributions are welcome! Here's how to get started:
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Make** your changes following the existing code patterns
-4. **Lint** your code: `bun run lint:fix`
-5. **Test** your changes: `bun test`
-6. **Commit** with a semantic message: `git commit -m "feat: add amazing feature"`
-7. **Push** to your fork: `git push origin feature/amazing-feature`
-8. **Open** a Pull Request
-
----
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
