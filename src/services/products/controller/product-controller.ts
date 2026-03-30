@@ -2,6 +2,8 @@ import fs from "node:fs/promises";
 import { Hono } from "hono";
 import ClientError from "../../../exceptions/client-error";
 import { authMiddleware } from "../../../middlewares/auth";
+import { heavyOperationRateLimiter } from "../../../middlewares/rate-limiter";
+import { throttleMiddleware } from "../../../middlewares/throttle";
 import type { ApplicationVariables } from "../../../model/app-model";
 import type { GetProductsRequest } from "../../../model/product-model";
 import ProductRepository from "../repositories/product-repositories";
@@ -38,7 +40,7 @@ productController.post("/api/product", async (c) => {
   );
 });
 
-productController.post("/api/product/:id/image", async (c) => {
+productController.post("/api/product/:id/image", heavyOperationRateLimiter, async (c) => {
   const id = c.req.param("id");
 
   // Gunakan { all: true } agar Hono mengembalikan array jika ada lebih dari satu file pada field yang sama
@@ -56,14 +58,8 @@ productController.post("/api/product/:id/image", async (c) => {
   }
 
   // Validasi: tipe file
-  if (
-    !ALLOWED_IMAGE_TYPES.includes(
-      file.type as (typeof ALLOWED_IMAGE_TYPES)[number],
-    )
-  ) {
-    throw new ClientError(
-      "Tipe file tidak didukung. Gunakan JPEG, JPG, PNG, atau WebP",
-    );
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
+    throw new ClientError("Tipe file tidak didukung. Gunakan JPEG, JPG, PNG, atau WebP");
   }
 
   // Validasi: ukuran file
@@ -118,17 +114,13 @@ productController.post("/api/product/:id/image", async (c) => {
   );
 });
 
-productController.get("/api/products", async (c) => {
+productController.get("/api/products", throttleMiddleware, async (c) => {
   const request: GetProductsRequest = {
     page: Number(c.req.query("page") ?? 1), // default ke halaman 1 jika tidak disertakan
     size: Number(c.req.query("size") ?? 10), // default 10 item per halaman jika tidak disertakan
     name: c.req.query("name"),
-    min_price: c.req.query("min_price")
-      ? Number(c.req.query("min_price"))
-      : undefined,
-    max_price: c.req.query("max_price")
-      ? Number(c.req.query("max_price"))
-      : undefined,
+    min_price: c.req.query("min_price") ? Number(c.req.query("min_price")) : undefined,
+    max_price: c.req.query("max_price") ? Number(c.req.query("max_price")) : undefined,
     in_stock: c.req.query("in_stock") === "true",
     category_slug: c.req.query("category_slug"),
     sort_by: c.req.query("sort_by") as GetProductsRequest["sort_by"],
@@ -147,7 +139,7 @@ productController.get("/api/products", async (c) => {
   );
 });
 
-productController.get("/api/product/:id", async (c) => {
+productController.get("/api/product/:id", throttleMiddleware, async (c) => {
   const id = c.req.param("id");
 
   const response = await ProductRepository.getProductById(id);
@@ -208,66 +200,51 @@ productController.delete("/api/product/:id", async (c) => {
 });
 
 // Endpoint likes — memerlukan autentikasi
-productController.post(
-  "/api/product/:id/wishlist",
-  authMiddleware,
-  async (c) => {
-    const productId = c.req.param("id");
-    const credential = c.get("user");
+productController.post("/api/product/:id/wishlist", authMiddleware, async (c) => {
+  const productId = c.req.param("id");
+  const credential = c.get("user");
 
-    const response = await ProductRepository.wishlistProduct(
-      productId,
-      credential,
-    );
+  const response = await ProductRepository.wishlistProduct(productId, credential);
 
-    return c.json(
-      {
-        status: "success",
-        message: "Produk berhasil dimasukkan ke wishlist",
-        data: response,
-      },
-      201,
-    );
-  },
-);
+  return c.json(
+    {
+      status: "success",
+      message: "Produk berhasil dimasukkan ke wishlist",
+      data: response,
+    },
+    201,
+  );
+});
 
-productController.delete(
-  "/api/product/:id/wishlist",
-  authMiddleware,
-  async (c) => {
-    const productId = c.req.param("id");
-    const credential = c.get("user");
+productController.delete("/api/product/:id/wishlist", authMiddleware, async (c) => {
+  const productId = c.req.param("id");
+  const credential = c.get("user");
 
-    await ProductRepository.removeFromWishlist(productId, credential);
+  await ProductRepository.removeFromWishlist(productId, credential);
 
-    return c.json(
-      {
-        status: "success",
-        message: "Produk berhasil dihapus dari wishlist",
-      },
-      200,
-    );
-  },
-);
+  return c.json(
+    {
+      status: "success",
+      message: "Produk berhasil dihapus dari wishlist",
+    },
+    200,
+  );
+});
 
-productController.get(
-  "/api/product/:id/wishlists",
-  authMiddleware,
-  async (c) => {
-    const productId = c.req.param("id");
+productController.get("/api/product/:id/wishlists", authMiddleware, async (c) => {
+  const productId = c.req.param("id");
 
-    const response = await ProductRepository.getProductWishlist(productId);
+  const response = await ProductRepository.getProductWishlist(productId);
 
-    const returnResponse = c.json(
-      {
-        status: "success",
-        data: response,
-      },
-      200,
-    );
+  const returnResponse = c.json(
+    {
+      status: "success",
+      data: response,
+    },
+    200,
+  );
 
-    returnResponse.headers.set("X-Source", response.source);
+  returnResponse.headers.set("X-Source", response.source);
 
-    return returnResponse;
-  },
-);
+  return returnResponse;
+});

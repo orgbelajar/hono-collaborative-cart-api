@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../../../middlewares/auth";
+import { heavyOperationRateLimiter } from "../../../middlewares/rate-limiter";
 import type { ApplicationVariables } from "../../../model/app-model";
 import type { ExportOrderMessage } from "../../../model/export-model";
 import { ExportService } from "../publishers/export-service";
@@ -11,7 +12,7 @@ export const exportController = new Hono<{
 
 exportController.use(authMiddleware);
 
-exportController.post("/api/export/order/:cartId", async (c) => {
+exportController.post("/api/export/order/:cartId", heavyOperationRateLimiter, async (c) => {
   const request = exportOrderPayloadSchema.parse(await c.req.json());
   const credential = c.get("user");
   const cartId = c.req.param("cartId");

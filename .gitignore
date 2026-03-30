@@ -9,3 +9,5 @@ node_modules/
 .env.*
 
 *.stackdump
+
+src/services/products/files/images/

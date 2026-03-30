@@ -22,10 +22,7 @@ import CollaborationRepositories from "../../collaborations/repositories/collabo
 
 export default class CartRepositories {
   // Done
-  static async verifyCartOwner(
-    cartId: string,
-    credential: User,
-  ): Promise<void> {
+  static async verifyCartOwner(cartId: string, credential: User): Promise<void> {
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
     });
@@ -35,19 +32,14 @@ export default class CartRepositories {
     }
 
     if (cart.ownerId !== credential.id) {
-      throw new AuthorizationError(
-        "Anda tidak berhak mengakses keranjang belanja ini",
-      );
+      throw new AuthorizationError("Anda tidak berhak mengakses keranjang belanja ini");
     }
 
     // return toCartResponse(cart);
   }
 
   // Done
-  static async verifyCartAccess(
-    cartId: string,
-    credential: User,
-  ): Promise<void> {
+  static async verifyCartAccess(cartId: string, credential: User): Promise<void> {
     try {
       // Cek apakah dia owner
       await CartRepositories.verifyCartOwner(cartId, credential);
@@ -88,10 +80,7 @@ export default class CartRepositories {
   }
 
   // Done
-  static async addCart(
-    credential: User,
-    request: AddCartPayload,
-  ): Promise<AddCartResponse> {
+  static async addCart(credential: User, request: AddCartPayload): Promise<AddCartResponse> {
     const id = `cart-${nanoid(16)}`;
 
     const data = {
@@ -222,9 +211,7 @@ export default class CartRepositories {
   }
 
   // Done
-  static async getProductsFromCart(
-    cartId: string,
-  ): Promise<CartWithProductsResponse> {
+  static async getProductsFromCart(cartId: string): Promise<CartWithProductsResponse> {
     const cart = await prisma.cart.findUnique({
       where: { id: cartId },
       include: {
@@ -266,9 +253,7 @@ export default class CartRepositories {
     });
 
     if (!cartItem) {
-      throw new NotFoundError(
-        "Produk di dalam keranjang belanja tidak ditemukan",
-      );
+      throw new NotFoundError("Produk di dalam keranjang belanja tidak ditemukan");
     }
 
     if (cartItem.qty > 1) {
@@ -296,9 +281,7 @@ export default class CartRepositories {
   }
 
   // Done
-  static async getCartActivities(
-    cartId: string,
-  ): Promise<CartActivityResponse[]> {
+  static async getCartActivities(cartId: string): Promise<CartActivityResponse[]> {
     const activities = await prisma.cartActivity.findMany({
       where: { cartId },
       orderBy: { time: "asc" },

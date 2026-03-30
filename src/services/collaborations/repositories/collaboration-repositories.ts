@@ -11,10 +11,7 @@ import {
 
 export default class CollaborationRepositories {
   // Done
-  static async verifyCollaborator(
-    cartId: string,
-    user: User,
-  ): Promise<boolean> {
+  static async verifyCollaborator(cartId: string, user: User): Promise<boolean> {
     const collaborator = await prisma.cartSharedUser.findFirst({
       where: {
         cartId,
@@ -30,9 +27,7 @@ export default class CollaborationRepositories {
   }
 
   // Done
-  static async addCollaboration(
-    request: CollaborationRequest,
-  ): Promise<CollaborationResponse> {
+  static async addCollaboration(request: CollaborationRequest): Promise<CollaborationResponse> {
     // Pastikan user eksis
     const user = await prisma.user.findUnique({
       where: { id: request.userId },
@@ -68,9 +63,7 @@ export default class CollaborationRepositories {
   }
 
   // Done
-  static async deleteCollaboration(
-    request: CollaborationRequest,
-  ): Promise<void> {
+  static async deleteCollaboration(request: CollaborationRequest): Promise<void> {
     const collaboration = await prisma.cartSharedUser.findFirst({
       where: {
         cartId: request.cartId,

@@ -31,9 +31,7 @@ export const toAddCategoryResponse = (category: Category): CategoryResponse => {
   };
 };
 
-export const toGetCategoryByIdResponse = (
-  category: Category,
-): CategoryResponse => {
+export const toGetCategoryByIdResponse = (category: Category): CategoryResponse => {
   return {
     categoryId: category.id,
     name: category.name,
@@ -43,9 +41,7 @@ export const toGetCategoryByIdResponse = (
   };
 };
 
-export const toEditCategoryResponse = (
-  category: Category,
-): CategoryResponse => {
+export const toEditCategoryResponse = (category: Category): CategoryResponse => {
   return {
     categoryId: category.id,
     name: category.name,

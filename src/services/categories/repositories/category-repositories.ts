@@ -14,9 +14,7 @@ import {
 } from "../../../model/category-model";
 
 export default class CategoryRepositories {
-  static async addCategory(
-    request: CategoryRequest,
-  ): Promise<CategoryResponse> {
+  static async addCategory(request: CategoryRequest): Promise<CategoryResponse> {
     const id = `category-${nanoid(17)}`;
 
     const baseSlug = slugify(request.name, { lower: true });
@@ -51,9 +49,7 @@ export default class CategoryRepositories {
     return categories.map(toGetCategoryByIdResponse);
   }
 
-  static async getCategoryWithProductsById(
-    id: string,
-  ): Promise<CategoryWithProductsResponse> {
+  static async getCategoryWithProductsById(id: string): Promise<CategoryWithProductsResponse> {
     const category = await prisma.category.findUnique({
       where: {
         id,
@@ -70,10 +66,7 @@ export default class CategoryRepositories {
     return toGetCategoryWithProductsResponse(category);
   }
 
-  static async editCategoryById(
-    id: string,
-    request: CategoryRequest,
-  ): Promise<CategoryResponse> {
+  static async editCategoryById(id: string, request: CategoryRequest): Promise<CategoryResponse> {
     await CategoryRepositories.getCategoryById(id);
 
     const baseSlug = slugify(request.name, { lower: true });
@@ -101,9 +94,7 @@ export default class CategoryRepositories {
     });
 
     if (productCount > 0) {
-      throw new InvariantError(
-        "Kategori tidak dapat dihapus karena masih memiliki produk",
-      );
+      throw new InvariantError("Kategori tidak dapat dihapus karena masih memiliki produk");
     }
 
     await prisma.category.delete({

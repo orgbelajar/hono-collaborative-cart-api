@@ -104,9 +104,7 @@ export function toProductResponse(product: Product): ProductResponse {
   };
 }
 
-export const toProductDetailResponse = (
-  product: Product,
-): ProductDetailResponse => ({
+export const toProductDetailResponse = (product: Product): ProductDetailResponse => ({
   id: product.id,
   name: product.name,
   description: product.description ?? undefined,
@@ -118,9 +116,7 @@ export const toProductDetailResponse = (
   updatedAt: product.updatedAt,
 });
 
-export const toProductCreatedResponse = (
-  product: Product,
-): ProductCreatedResponse => ({
+export const toProductCreatedResponse = (product: Product): ProductCreatedResponse => ({
   id: product.id,
   name: product.name,
   description: product.description,
@@ -131,9 +127,7 @@ export const toProductCreatedResponse = (
   createdAt: product.createdAt,
 });
 
-export const toProductUpdatedResponse = (
-  product: Product,
-): ProductUpdatedResponse => ({
+export const toProductUpdatedResponse = (product: Product): ProductUpdatedResponse => ({
   id: product.id,
   name: product.name,
   description: product.description,

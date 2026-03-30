@@ -8,8 +8,6 @@ export const ExportService = {
 
     await js.publish(queue, JSON.stringify(message));
 
-    logger.info(
-      `Pesan export order untuk cart ${message.cartId} telah dipublikasikan ke NATS`,
-    );
+    logger.info(`Pesan export order untuk cart ${message.cartId} telah dipublikasikan ke NATS`);
   },
 };
