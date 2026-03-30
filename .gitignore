@@ -10,4 +10,4 @@ node_modules/
 
 *.stackdump
 
-src/services/products/files/images/*.jpeg
+src/services/products/files/images/
