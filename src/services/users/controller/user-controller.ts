@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import { registrationRateLimiter } from "../../../middlewares/rate-limiter";
+import { throttleMiddleware } from "../../../middlewares/throttle";
 import type { ApplicationVariables } from "../../../model/app-model";
 import UserRepository from "../repositories/user-repositories";
 // import { UserRepository } from "../repositories/new-user-repositories";
@@ -6,7 +8,7 @@ import { userPayloadSchema } from "../validator/schema";
 
 export const userController = new Hono<{ Variables: ApplicationVariables }>();
 
-userController.post("/api/user", async (c) => {
+userController.post("/api/user", registrationRateLimiter, async (c) => {
   const request = userPayloadSchema.parse(await c.req.json());
 
   const response = await UserRepository.registerUser(request);
@@ -21,7 +23,7 @@ userController.post("/api/user", async (c) => {
   );
 });
 
-userController.get("/api/user/:id", async (c) => {
+userController.get("/api/user/:id", throttleMiddleware, async (c) => {
   const id = c.req.param("id");
 
   const response = await UserRepository.getUserById(id);
@@ -35,7 +37,7 @@ userController.get("/api/user/:id", async (c) => {
   );
 });
 
-userController.get("/api/users", async (c) => {
+userController.get("/api/users", throttleMiddleware, async (c) => {
   const { username = "" } = c.req.query();
 
   const response = await UserRepository.getUsersByUsername(username);

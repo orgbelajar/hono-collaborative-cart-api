@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { throttleMiddleware } from "../../../middlewares/throttle";
 import CategoryRepositories from "../repositories/category-repositories";
 import { categoryPayloadSchema } from "../validator/schema";
 
@@ -19,7 +20,7 @@ categoryController.post("/api/category", async (c) => {
   );
 });
 
-categoryController.get("/api/categories", async (c) => {
+categoryController.get("/api/categories", throttleMiddleware, async (c) => {
   const response = await CategoryRepositories.getCategories();
 
   return c.json(
@@ -31,7 +32,7 @@ categoryController.get("/api/categories", async (c) => {
   );
 });
 
-categoryController.get("/api/category/:id/products", async (c) => {
+categoryController.get("/api/category/:id/products", throttleMiddleware, async (c) => {
   const id = c.req.param("id");
 
   const response = await CategoryRepositories.getCategoryWithProductsById(id);

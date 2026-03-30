@@ -24,8 +24,7 @@ collaborationController.post("/api/collaborations", async (c) => {
   return c.json(
     {
       status: "success",
-      message:
-        "Pengguna berhasil ditambahkan ke dalam kolaborasi keranjang belanja anda",
+      message: "Pengguna berhasil ditambahkan ke dalam kolaborasi keranjang belanja anda",
       data: response,
     },
     201,
@@ -45,8 +44,7 @@ collaborationController.delete("/api/collaborations", async (c) => {
   return c.json(
     {
       status: "success",
-      message:
-        "Pengguna berhasil dihapus dari kolaborasi keranjang belanja anda",
+      message: "Pengguna berhasil dihapus dari kolaborasi keranjang belanja anda",
     },
     200,
   );
