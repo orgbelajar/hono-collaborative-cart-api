@@ -473,21 +473,6 @@ graph LR
 
 ---
 
-## Kontribusi
-
-Kontribusi sangat diterima! Berikut cara untuk memulai:
-
-1. **Fork** repositori ini
-2. **Buat** branch fitur: `git checkout -b feature/fitur-baru`
-3. **Buat** perubahan Anda mengikuti pola kode yang ada
-4. **Lint** kode Anda: `bun run lint:fix`
-5. **Tes** perubahan Anda: `bun test`
-6. **Commit** dengan pesan semantik: `git commit -m "feat: tambah fitur baru"`
-7. **Push** ke fork Anda: `git push origin feature/fitur-baru`
-8. **Buka** Pull Request
-
----
-
 ## Lisensi
 
 Proyek ini dilisensikan di bawah [Lisensi MIT](LICENSE).
